@@ -1,11 +1,22 @@
 {
-  "name": "delivery.bot",
+  "name": "vatman.bot",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Massacars/Vatman.bot.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Massacars/Vatman.bot/issues"
+  },
+  "homepage": "https://github.com/Massacars/Vatman.bot#readme",
+  "description": "",
+  "dependencies": {
+    "node-telegram-bot-api": "^0.30.0"
+  }
 }
