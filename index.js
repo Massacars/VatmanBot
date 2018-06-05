@@ -13,6 +13,10 @@ function coinFlip() {
   return Math.round(Math.random() * (VatmanTalk.length - 0) + 0);
 }
 
+function coinHandFlip() {
+  return (Math.floor(Math.random() * 2) === 0);
+}
+
 bot.onText(/\/start/, function(msg, match){
 	const userId = msg.from.id;
 	const chatId = msg.chat.id;
@@ -22,7 +26,7 @@ bot.onText(/\/start/, function(msg, match){
 bot.onText(/\/help/, function(msg, match){
 	const userId = msg.from.id;
 	const chatId = msg.chat.id;
-	bot.sendMessage(userId,'Поки в мене є тільки /ping і /say, але я навчусь більше!');
+	bot.sendMessage(userId,'Поки в мене є тільки /ping , /say та /coin, але я навчусь більше!');
 });
 
 bot.onText(/\/ping/, function(msg, match){
@@ -37,27 +41,46 @@ bot.onText(/\/ping/, function(msg, match){
 	
 });
 
-bot.onText(/\/say/, function(msg, match){
+bot.onText(/\/say/, function(msg, match) {
 	const userId = msg.from.id;
-	const chatId = msg.chat.id;	
+	const chatId = msg.chat.id;
 
-	if(coinFlip() > VatmanTalk.length){
+	if (coinFlip() > VatmanTalk.length) {
 		var VatmanTalkMsgID = coinFlip() - 1;
 	} else {
 		var VatmanTalkMsgID = coinFlip();
 	}
 
-	if(VatmanTalk[VatmanTalkMsgID] != ''){
+	if (VatmanTalk[VatmanTalkMsgID] != '') {
+		if (msg.chat.type == 'group' || msg.chat.type == 'supergroup') {
+			bot.sendMessage(chatId, VatmanTalk[VatmanTalkMsgID]);
+		} else if (msg.chat.type == 'private') {
+			bot.sendMessage(userId, VatmanTalk[VatmanTalkMsgID]);
+		}
+	} else {
+		if (msg.chat.type == 'group' || msg.chat.type == 'supergroup') {
+			bot.sendMessage(chatId, 'Уууу.. Щось пішло не так..');
+		} else if (msg.chat.type == 'private') {
+			bot.sendMessage(userId, 'Уууу.. Щось пішло не так..');
+		}
+	}
+});
+
+bot.onText(/\/coin/, function(msg, match){
+	const userId = msg.from.id;
+	const chatId = msg.chat.id;
+	
+	if(coinHandFlip()){
 		if(msg.chat.type == 'group' || msg.chat.type == 'supergroup'){
-			bot.sendMessage(chatId,VatmanTalk[VatmanTalkMsgID]);
+			bot.sendMessage(chatId,'Юний Орел');
 		} else if (msg.chat.type == 'private'){
-			bot.sendMessage(userId,VatmanTalk[VatmanTalkMsgID]);	
+			bot.sendMessage(userId,'Юний Орел');	
 		}		
 	} else {
-		if(msg.chat.type == 'group'){
-			bot.sendMessage(chatId,'Уууу.. Щось пішло не так..');
+		if(msg.chat.type == 'group' || msg.chat.type == 'supergroup'){
+			bot.sendMessage(chatId,'Не Орел');
 		} else if (msg.chat.type == 'private'){
-			bot.sendMessage(userId,'Уууу.. Щось пішло не так..');	
-		}		
-	}
-}); 
+			bot.sendMessage(userId,'Не Орел');	
+		}			
+	}	
+});
