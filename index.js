@@ -18,34 +18,30 @@ function coinHandFlip() {
 	return (Math.floor(Math.random() * 2) === 0);
 }
 
-bot.onText(/\/start/, function(msg, match) {
+bot.onText(/\/start/, async function(msg, match) {
 	const userId = msg.from.id;
 	const chatId = msg.chat.id;
-
-	bot.sendMessage(userId, config.phrases.hello);
+	await bot.sendMessage(userId, config.phrases.hello);
 });
 
-bot.onText(/\/help/, function(msg, match) {
+bot.onText(/\/help/, async function(msg, match) {
 	const userId = msg.from.id;
 	const chatId = msg.chat.id;
-
 	if (msg.chat.type == 'group' || msg.chat.type == 'supergroup') {
-		bot.sendMessage(chatId, config.phrases.help);
+		await bot.sendMessage(chatId, config.phrases.help);
 	} else {
-		bot.sendMessage(userId, config.phrases.help);
+		await bot.sendMessage(userId, config.phrases.help);
 	}
 });
 
-bot.onText(/\/ping/, function(msg, match) {
+bot.onText(/\/ping/, async function(msg, match) {
 	const userId = msg.from.id;
 	const chatId = msg.chat.id;
-
 	if (msg.chat.type == 'group' || msg.chat.type == 'supergroup') {
-		bot.sendMessage(chatId, config.phrases.ping);
+		await bot.sendMessage(chatId, config.phrases.ping);
 	} else if (msg.chat.type == 'private') {
-		bot.sendMessage(userId, config.phrases.ping);
+		await bot.sendMessage(userId, config.phrases.ping);
 	}
-
 });
 
 bot.onText(/\/say/, async function(msg, match) {
