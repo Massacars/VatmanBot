@@ -1,86 +1,104 @@
 var TelegramBot = require('node-telegram-bot-api');
-var token = '489923789:AAH5WyDngJZCxmgvp207ND-6OaxPFcEtMxY';
-var bot = new TelegramBot(token, { polling: true });
+var config = require('config');
+
+var bot = new TelegramBot(config.token, { polling: true });
+
+var VatmanSay = config.vatmansay;
 
 var UserData = {
-	user:'',
-	state:'0'
+	user: '',
+	state: '0'
 };
 
-var VatmanTalk = ['Ну камон... Я ж нажав..','Та все окей)','А хто придумав ьі ...','Фу. Лузери!','А потім приїжджаєш в Україну львівським метром 🌝','Ботінки херня. Можна і босим походити) 🌝','Аби ще якась * не перепінила через хвилину...)','Ну да, ну да) не баг, а фіча','Шо за ноунейми...','І поскидував репорти за день, він каже "все ок, опрацьовано". Але хісторі не змінилася. Сука двулика.','Ты выгнал игрока 📯Alex Stardust (45) из команды.','Вітаємо в сєкті.','#переточ','⚔️Атака: -1 🛡Защита: 12.. Я монстр!'];
-
-function coinFlip() {  
-  return Math.round(Math.random() * (VatmanTalk.length - 0) + 0);
+function coinFlip() {
+	return Math.round(Math.random() * (VatmanSay[0].length - 0) + 0);
 }
 
 function coinHandFlip() {
-  return (Math.floor(Math.random() * 2) === 0);
+	return (Math.floor(Math.random() * 2) === 0);
 }
 
-bot.onText(/\/start/, function(msg, match){
+bot.onText(/\/start/, function(msg, match) {
 	const userId = msg.from.id;
 	const chatId = msg.chat.id;
-	bot.sendMessage(userId,'А дійсно...');
+
+	bot.sendMessage(userId, config.phrases.hello);
 });
 
-bot.onText(/\/help/, function(msg, match){
-	const userId = msg.from.id;
-	const chatId = msg.chat.id;
-	bot.sendMessage(userId,'Поки в мене є тільки /ping , /say та /coin, але я навчусь більше!');
-});
-
-bot.onText(/\/ping/, function(msg, match){
-	const userId = msg.from.id;
-	const chatId = msg.chat.id;
-	
-	if(msg.chat.type == 'group' || msg.chat.type == 'supergroup'){
-		bot.sendMessage(chatId,'Pong');
-	} else if (msg.chat.type == 'private'){
-		bot.sendMessage(userId,'Pong');	
-	}
-	
-});
-
-bot.onText(/\/say/, function(msg, match) {
+bot.onText(/\/help/, function(msg, match) {
 	const userId = msg.from.id;
 	const chatId = msg.chat.id;
 
-	if (coinFlip() > VatmanTalk.length) {
-		var VatmanTalkMsgID = coinFlip() - 1;
+	if (msg.chat.type == 'group' || msg.chat.type == 'supergroup') {
+		bot.sendMessage(chatId, config.phrases.help);
 	} else {
-		var VatmanTalkMsgID = coinFlip();
+		bot.sendMessage(userId, config.phrases.help);
+	}
+});
+
+bot.onText(/\/ping/, function(msg, match) {
+	const userId = msg.from.id;
+	const chatId = msg.chat.id;
+
+	if (msg.chat.type == 'group' || msg.chat.type == 'supergroup') {
+		bot.sendMessage(chatId, config.phrases.ping);
+	} else if (msg.chat.type == 'private') {
+		bot.sendMessage(userId, config.phrases.ping);
 	}
 
-	if (VatmanTalk[VatmanTalkMsgID] != '') {
-		if (msg.chat.type == 'group' || msg.chat.type == 'supergroup') {
-			bot.sendMessage(chatId, VatmanTalk[VatmanTalkMsgID]);
+});
+
+bot.onText(/\/say/, async function(msg, match) {
+	const userId = msg.from.id;
+	const chatId = msg.chat.id;
+	const messageId = msg.message_id;
+	var VatmanTalkMsgID = coinFlip();
+	if (VatmanSay[VatmanTalkMsgID] != '' && VatmanSay[VatmanTalkMsgID]) {
+		if (msg.chat.type == 'group' || msg.chat.type == 'supergroup') {			
+			if (msg.reply_to_message) {				
+				await bot.deleteMessage(chatId, messageId).catch((error) => {			
+					if(!error.response.body.ok){
+						bot.sendMessage(chatId, config.phrases.gimmeadmin);
+					}										
+				});
+				
+			};
+			await bot.sendMessage(chatId, VatmanSay[VatmanTalkMsgID]);
 		} else if (msg.chat.type == 'private') {
-			bot.sendMessage(userId, VatmanTalk[VatmanTalkMsgID]);
+			await bot.sendMessage(userId, VatmanSay[VatmanTalkMsgID]);
 		}
 	} else {
 		if (msg.chat.type == 'group' || msg.chat.type == 'supergroup') {
-			bot.sendMessage(chatId, 'Уууу.. Щось пішло не так..');
+			await bot.sendMessage(chatId, config.phrases.error);
 		} else if (msg.chat.type == 'private') {
-			bot.sendMessage(userId, 'Уууу.. Щось пішло не так..');
+			await bot.sendMessage(userId, config.phrases.error);
 		}
 	}
 });
 
-bot.onText(/\/coin/, function(msg, match){
+bot.onText(/\/coin/, async function(msg, match) {
 	const userId = msg.from.id;
 	const chatId = msg.chat.id;
-	
-	if(coinHandFlip()){
-		if(msg.chat.type == 'group' || msg.chat.type == 'supergroup'){
-			bot.sendMessage(chatId,'Юний Орел');
-		} else if (msg.chat.type == 'private'){
-			bot.sendMessage(userId,'Юний Орел');	
-		}		
+	if (coinHandFlip()) {
+		if (msg.chat.type == 'group' || msg.chat.type == 'supergroup') {
+			await bot.sendMessage(chatId, config.phrases.eagle);
+		} else if (msg.chat.type == 'private') {
+			await bot.sendMessage(userId, config.phrases.eagle);
+		}
 	} else {
-		if(msg.chat.type == 'group' || msg.chat.type == 'supergroup'){
-			bot.sendMessage(chatId,'Не Орел');
-		} else if (msg.chat.type == 'private'){
-			bot.sendMessage(userId,'Не Орел');	
-		}			
-	}	
+		if (msg.chat.type == 'group' || msg.chat.type == 'supergroup') {
+			await bot.sendMessage(chatId, config.phrases.noteagle);
+		} else if (msg.chat.type == 'private') {
+			await bot.sendMessage(userId, config.phrases.noteagle);
+		}
+	}
+});
+
+bot.onText(/\#vatmansay/, async function(msg, match) {
+	const userId = msg.from.id;
+	const chatId = msg.chat.id;
+
+	await bot.sendMessage(userId, JSON.stringify(msg));
+	await bot.sendMessage(chatId, config.phrases.ty);
+
 });
