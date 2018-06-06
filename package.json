@@ -17,6 +17,7 @@
   "homepage": "https://github.com/Massacars/Vatman.bot#readme",
   "description": "",
   "dependencies": {
+    "config": "^1.30.0",
     "node-telegram-bot-api": "^0.30.0"
   }
 }
