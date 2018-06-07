@@ -11,11 +11,19 @@ var UserData = {
 
 function coinFlip() {
 	return Math.round(Math.random() * (VatmanSayLenght - 0) + 0);
-}
+};
 
 function coinHandFlip() {
 	return (Math.floor(Math.random() * 2) === 0);
-}
+};
+
+function phrasesList(){
+	var phrasesList = '';
+	for (i = 0; i < VatmanSayLenght; i++){
+		phrasesList = phrasesList + ('\nID:'+ i + ' - ' + VatmanSay[i]);
+	}
+	return phrasesList;
+};
 
 bot.onText(/\/start/, async function(msg, match) {
 	const userId = msg.from.id;
@@ -75,10 +83,8 @@ bot.onText(/\/phrases/, async function(msg, match) {
 	const userId = msg.from.id;
 	const chatId = msg.chat.id;
 	
-	if (msg.chat.type == 'private') {
-		for (i = 0; i < VatmanSayLenght; i++){
-			await bot.sendMessage(userId, 'ID:'+ i + ' - ' + VatmanSay[i]);
-		}
+	if (msg.chat.type == 'private') {		
+		await bot.sendMessage(userId, phrasesList());
 	}
 });
 
