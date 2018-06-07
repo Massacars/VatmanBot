@@ -1,9 +1,8 @@
-var TelegramBot = require('node-telegram-bot-api');
-var config = require('config');
-
-var bot = new TelegramBot(config.token, { polling: true });
-
-var VatmanSay = config.vatmansay;
+const TelegramBot = require('node-telegram-bot-api');
+const config = require('config');
+const bot = new TelegramBot(config.token, { polling: true });
+const VatmanSay = config.vatmansay;
+const VatmanSayLenght = Object.keys(VatmanSay).length;
 
 var UserData = {
 	user: '',
@@ -11,7 +10,7 @@ var UserData = {
 };
 
 function coinFlip() {
-	return Math.round(Math.random() * (VatmanSay[0].length - 0) + 0);
+	return Math.round(Math.random() * (VatmanSayLenght - 0) + 0);
 }
 
 function coinHandFlip() {
@@ -68,6 +67,17 @@ bot.onText(/\/say/, async function(msg, match) {
 			await bot.sendMessage(chatId, config.phrases.error);
 		} else if (msg.chat.type == 'private') {
 			await bot.sendMessage(userId, config.phrases.error);
+		}
+	}
+});
+
+bot.onText(/\/phrases/, async function(msg, match) {
+	const userId = msg.from.id;
+	const chatId = msg.chat.id;
+	
+	if (msg.chat.type == 'private') {
+		for (i = 0; i < VatmanSayLenght; i++){
+			await bot.sendMessage(userId, 'ID:'+ i + ' - ' + VatmanSay[i]);
 		}
 	}
 });
