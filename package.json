@@ -20,6 +20,7 @@
     "config": "^1.30.0",
     "mysql": "^2.15.0",
     "node-telegram-bot-api": "^0.30.0",
+    "require-fu": "^1.0.0",
     "tgfancy": "^0.13.0"
   }
 }
