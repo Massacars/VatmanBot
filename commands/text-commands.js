@@ -99,4 +99,37 @@ const VatmanSayLenght = Object.keys(VatmanSay).length;
 			}
 		}
 	});
+
+	bot.onText(/\/money/, async function(msg, match) {
+		const userId = msg.from.id;
+		const chatId = msg.chat.id;
+		const messageId = msg.message_id;
+		if (msg.chat.type == 'group' || msg.chat.type == 'supergroup'){
+			moneyMessage = await bot.sendMessage(chatId, "В @StartupWarsChat началась лотерея!🕸\n\n*Сеть->🎪Казино->🤑Лотерея* \n\nРезультаты будут в чате в 21:15🎉", {parse_mode:"Markdown"});			
+			bot.pinChatMessage(chatId, moneyMessage.message_id);
+			bot.deleteMessage(chatId, messageId);
+		}
+	});
+
+	bot.onText(/\/eat/, async function(msg, match) {
+		const userId = msg.from.id;
+		const chatId = msg.chat.id;
+		const messageId = msg.message_id;
+		if (msg.chat.type == 'group' || msg.chat.type == 'supergroup'){
+			warnMessage = await bot.sendMessage(chatId, "Сотрудники Отдела Маркетинга <b>[ОМ]</b> 🍕  \n\n Огромная просьба: \n\n🗄 Обновить данные: \n/compact, /stock => @HendricksBot \n\n🔋 Регулярно кушать:\n/to_eat => пока не будет <b>200</b>. \n\n✏️ По желанию: \n/setname => Добавить в конце тег <b>-OM-</b> \n\nСпасибо за внимание. \n/AVE_PP \n/AVE_OM", {parse_mode:"HTML"});
+			bot.pinChatMessage(chatId, warnMessage.message_id);
+			bot.deleteMessage(chatId, messageId);
+		}
+	});
+
+	bot.onText(/\/list/, async function(msg, match) {
+		const userId = msg.from.id;
+		const chatId = msg.chat.id;
+		
+		if (msg.chat.type == 'private') {		
+			await bot.sendMessage(userId, "/phrases - Список фраз для команди /say \n/money - Пін на лотерею\n/eat - Пін на репорти та їжу");
+		}
+	});
+
 }
+
