@@ -1,6 +1,6 @@
-module.exports = (schedule, bot, config,  db) => {
+module.exports = (schedule, bot, config, db) => {
 	const formatString = require('../util/formatString');
-	const { eatNotifString } = require('../strings/chats-strings');	
+	const { eatNotifString } = require('../strings/chats-strings');
 
 	const eatFirstNotifRule = new schedule.RecurrenceRule();
 	const eatLastNotifRule = new schedule.RecurrenceRule();
@@ -14,47 +14,37 @@ module.exports = (schedule, bot, config,  db) => {
 
 	async function generateEatMessage(chatObj) {
 		let chatTag = "";
-		if(chatObj.tag){
+		if (chatObj.tag) {
 			chatTag = chatObj.tag;
 		}
 		return formatString(
 			eatNotifString, chatObj.name, chatTag,
 		);
-	};	
+	};
 
 	schedule.scheduleJob(eatFirstNotifRule, async () => {
-
-				
 		const notifyArr = await db.collection('chats').find({ state: true }).toArray();
-
 		notifyArr.forEach(async (chats) => {
 			const chatObj = await db.collection('chats').findOne({ _id: chats._id });
-			cheduledMsg = await bot.sendMessage(chats._id, await generateEatMessage(chatObj), {parse_mode:"HTML"});
-			bot.pinChatMessage(chats._id, cheduledMsg.message_id);
+			await bot.sendMessage(chats._id, await generateEatMessage(chatObj), { parse_mode: "HTML" });
 		});
 	});
 
 	schedule.scheduleJob(eatLastNotifRule, async () => {
-
-			
 		const notifyArr = await db.collection('chats').find({ state: true }).toArray();
-
 		notifyArr.forEach(async (chats) => {
 			const chatObj = await db.collection('chats').findOne({ _id: chats._id });
-			cheduledMsg = await bot.sendMessage(chats._id, await generateEatMessage(chatObj), {parse_mode:"HTML"});
-			bot.pinChatMessage(config.chats.OM, cheduledMsg.message_id);
+			cheduledMsg = await bot.sendMessage(chats._id, await generateEatMessage(chatObj), { parse_mode: "HTML" });
+			bot.pinChatMessage(chats._id, cheduledMsg.message_id, { disable_notification: true });
 		});
-	});	
+	});
 
 	schedule.scheduleJob(moneyNotifRule, async () => {
-
-		
 		const notifyArr = await db.collection('chats').find({ state: true }).toArray();
-
 		notifyArr.forEach(async (chats) => {
 			const chatObj = await db.collection('chats').findOne({ _id: chats._id });
-			cheduledMsg = await bot.sendMessage(chats._id, await generateEatMessage(chatObj), {parse_mode:"HTML"});
+			cheduledMsg = await bot.sendMessage(chats._id, await generateEatMessage(chatObj), { parse_mode: "HTML" });
 			bot.pinChatMessage(chats._id, cheduledMsg.message_id);
 		});
-	});		
+	});
 }
