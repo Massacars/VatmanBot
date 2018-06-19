@@ -43,7 +43,7 @@ module.exports = (schedule, bot, config, db) => {
 		const notifyArr = await db.collection('chats').find({ state: true }).toArray();
 		notifyArr.forEach(async (chats) => {
 			const chatObj = await db.collection('chats').findOne({ _id: chats._id });
-			cheduledMsg = await bot.sendMessage(chats._id, await generateEatMessage(chatObj), { parse_mode: "HTML" });
+			cheduledMsg = await bot.sendMessage(chats._id, config.pinmsg.money, { parse_mode: "HTML" });
 			bot.pinChatMessage(chats._id, cheduledMsg.message_id);
 		});
 	});
