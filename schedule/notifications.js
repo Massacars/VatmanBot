@@ -11,7 +11,7 @@ module.exports = (schedule, bot, config, db) => {
 	eatLastNotifRule.minute = 15;
 	moneyNotifRule.hour = 19;
 	moneyNotifRule.minute = 17;
-
+	
 	async function generateEatMessage(chatObj) {
 		let chatTag = "";
 		if (chatObj.tag) {
@@ -34,17 +34,16 @@ module.exports = (schedule, bot, config, db) => {
 		const notifyArr = await db.collection('chats').find({ state: true }).toArray();
 		notifyArr.forEach(async (chats) => {
 			const chatObj = await db.collection('chats').findOne({ _id: chats._id });
-			cheduledMsg = await bot.sendMessage(chats._id, await generateEatMessage(chatObj), { parse_mode: "HTML" });
-			bot.pinChatMessage(chats._id, cheduledMsg.message_id, { disable_notification: true });
+			scheduledMsg = await bot.sendMessage(chats._id, await generateEatMessage(chatObj), { parse_mode: "HTML" });
+			bot.pinChatMessage(chats._id, scheduledMsg.message_id, { disable_notification: true });
 		});
 	});
 
 	schedule.scheduleJob(moneyNotifRule, async () => {
 		const notifyArr = await db.collection('chats').find({ state: true }).toArray();
-		notifyArr.forEach(async (chats) => {
-			const chatObj = await db.collection('chats').findOne({ _id: chats._id });
-			cheduledMsg = await bot.sendMessage(chats._id, config.pinmsg.money, { parse_mode: "HTML" });
-			bot.pinChatMessage(chats._id, cheduledMsg.message_id);
+		notifyArr.forEach(async (chats) => {			
+			scheduledMsg = await bot.sendMessage(chats._id, config.pinmsg.money, { parse_mode: "HTML" });
+			bot.pinChatMessage(chats._id, scheduledMsg.message_id);
 		});
 	});
 }
