@@ -9,7 +9,7 @@ module.exports = (bot, config, db) => {
         
         await bot.sendMessage(chatId, decs, { reply_markup: { inline_keyboard: pollKeyboard } });
 
-    };    
+    };
 
     bot.onText(/Командные задания/, async function (msg) {
         const chatId = msg.chat.id;
@@ -29,38 +29,47 @@ module.exports = (bot, config, db) => {
 
     });
 
-    bot.on('callback_query', async function (msg) {
-        const userId = msg.from.id;
-        const chatId = msg.message.chat.id;
-        const pollId = msg.id;
-        const messageText = msg.message.text;
-        const messageId = msg.message.message_id;
+    bot.on('callback_query', async function (query) {
+        const userId = query.from.id;
+        const chatId = query.message.chat.id;
+        const pollId = query.chat_instance;
+        const queryId = query.id;
+        const userFormQuery = query.from.id;
+        const messageText = query.message.text;
+        const messageId = query.message.message_id;
+        const queryData = query.data;
 
-        if (msg.data == 'first_option') {
+        console.log(query);
+
+        if (queryData == 'first_option') {
             const userCheck = await db.collection('polls').findOne({_id: pollId, user: userId });
 
-            if (!userCheck) {
-                await bot.sendMessage(chatId, "Типу перший варіант");
+            if (!userCheck) {                
                 const optionData = {
-                    _id: msg.id,
-                    user: msg.from.id,
+                    _id: pollId,
+                    user: userFormQuery,
                     option: 'first_option'
                 }
-                await db.collection('polls').insertOne(optionData);               
+                await db.collection('polls').insertOne(optionData);
+                await bot.answerCallbackQuery(queryId, {text: "Голос принят!"})               
+            }else{
+                await bot.answerCallbackQuery(queryId, {text: "Читер!"})
             }
         };
 
-        if (msg.data == 'second_option') {
+        if (queryData == 'second_option') {
             const userCheck = await db.collection('polls').findOne({_id: pollId, user: userId });
            
-            if (!userCheck) {
-                await bot.sendMessage(chatId, "Типу другий варіант");
+            if (!userCheck) {                
                 const optionData = {
-                    _id: msg.id,
-                    user: msg.from.id,
+                    _id: pollId,
+                    user: userFormQuery,
                     option: 'second_option'
                 }
                 await db.collection('polls').insertOne(optionData);
+                await bot.answerCallbackQuery(queryId, {text: "Голос принят!"})               
+            }else{
+                await bot.answerCallbackQuery(queryId, {text: "Читер!"})
             }
         };
 
@@ -68,13 +77,13 @@ module.exports = (bot, config, db) => {
 
         votesFіrstOptionText = "За первый квест: " + votesFirstOption.length + "сотрудник (ов)";
 
-        const votesSecondOption = await db.collection('polls').find({_id: pollId, option: 'first_option' }).toArray();
+        const votesSecondOption = await db.collection('polls').find({_id: pollId, option: 'second_option' }).toArray();
 
         votesSecondOptionText = "За второй квест: " + votesSecondOption.length + "сотрудник (ов)";        
            
         newMessageText = messageText + "\n\n" + votesFіrstOptionText + "\n" + votesSecondOptionText;        
 
-        await bot.editMessageText(newMessageText, {chat_id: chatId, message_id: messageId});
+        await bot.sendMessage(chatId, newMessageText);        
 
     });
 }
