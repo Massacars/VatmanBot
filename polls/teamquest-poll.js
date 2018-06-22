@@ -9,29 +9,48 @@ module.exports = (bot, config, db) => {
             chatId: chatId,
             keyboard: pollKeyboardData,
             title: decs,
-            state: 'active'
+            state: 'active',
+            vote: {}
         }
         await db.collection('polls').insertOne(optionData);
         pollKeyboard = await db.collection('polls').findOne({ chatId: chatId, state: 'active' });
-        await bot.sendMessage(chatId, decs, { reply_markup: { inline_keyboard: pollKeyboard.keyboard }, parse_mode: "HTML" });
+        pollMessage = await bot.sendMessage(chatId, decs, { reply_markup: { inline_keyboard: pollKeyboard.keyboard }, parse_mode: "HTML" });
+        await bot.pinChatMessage(chatId, pollMessage.message_id);
     };
 
-    async function updatePoll(chatId, msgId, userId) {
-        votesFirstOption = await db.collection('polls').find({ chatId: chatId, state: 'active', 'votes.pollOption': 'first_option' }).toArray();
-        votesFіrstOptionText = "За первый квест: " + votesFirstOption.length + " сотрудник (ов)";
-
-        votesSecondOption = await db.collection('polls').find({ сhatId: chatId, state: 'active', 'votes.pollOption': 'second_option' }).toArray();
-        votesSecondOptionText = "За второй квест: " + votesSecondOption.length + " сотрудник (ов)";
-
+    async function updatePoll(chatId, msgId) {
+        pollObj = await db.collection('polls').findOne({ chatId: chatId, state: 'active' })
+        votesObj = pollObj.vote;
+        var firstOptionSummary = 0;
+        var secondOptionSummary = 0;
+        for (key in votesObj) {
+            if (votesObj[key][0] == 'first_option') {
+                firstOptionSummary = firstOptionSummary + 1;
+            }
+            if (votesObj[key][0] == 'second_option') {
+                secondOptionSummary = secondOptionSummary + 1;
+            }
+        }
+        votesFіrstOptionText = "За первый квест: " + firstOptionSummary + " бездельников.. ой сотрудников";
+        votesSecondOptionText = "За второй квест: " + secondOptionSummary + " бездельников.. ой сотрудников";
         messageText = await db.collection('polls').findOne({ chatId: chatId, state: 'active' });
         newMessageText = messageText.title + "\n\n" + votesFіrstOptionText + "\n" + votesSecondOptionText;
-
         pollKeyboard = await db.collection('polls').findOne({ chatId: chatId, state: 'active' });
-        await bot.editMessageText(newMessageText, { message_id: msgId, chat_id: chatId, reply_markup: { inline_keyboard: pollKeyboard.keyboard }, parse_mode: "HTML"});
+        await bot.editMessageText(newMessageText, { message_id: msgId, chat_id: chatId, reply_markup: { inline_keyboard: pollKeyboard.keyboard }, parse_mode: "HTML" });
+    }
+
+    async function checkUserVote(chatId, userId) {
+        pollObj = await db.collection('polls').findOne({ chatId: chatId, state: 'active' });
+        if (userId in pollObj.vote) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     bot.onText(/Командные задания/, async function (msg) {
         const chatId = msg.chat.id;
+        const msgId = msg.message_id;
         const sourceMsgText = msg.text;
         const arrayPollData = sourceMsgText.split('\n\n');
         const pollOptions = [];
@@ -52,55 +71,33 @@ module.exports = (bot, config, db) => {
                     state: 'disabled'
                 }
             });
-            await bot.sendMessage(chatId, 'Предыдущее голосование закрыто. Открываем новое!');
-            createPoll(chatId, config.textmsq.teamQuestPoll, pollOptions);
+            await bot.sendMessage(chatId, 'Вижу на прошлую голосовалку забили... \nНу ладно, открываем новую!');
+            await createPoll(chatId, config.textmsq.teamQuestPoll, pollOptions);
         } else {
-            createPoll(chatId, config.textmsq.teamQuestPoll, pollOptions);
+            await createPoll(chatId, config.textmsq.teamQuestPoll, pollOptions);
         };
+        await bot.deleteMessage(chatId, msgId);
+
     });
 
     bot.on('callback_query', async function (query) {
         const userId = query.from.id;
         const chatId = query.message.chat.id;
         const msgId = query.message.message_id;
-        const queryId = query.id;        
+        const queryId = query.id;
         const queryData = query.data;
 
-        if (queryData == 'first_option') {
-            userCheck = await db.collection('polls').findOne({ chatId: chatId, 'votes.user': userId, state: 'active' });
-            if (!userCheck) {
-                await db.collection('polls').updateOne({ chatId: chatId, state: 'active' }, {
-                    $set: {
-                        votes: {
-                            userId:{                                
-                                pollOption: 'first_option'
-                           }
-                        }
-                    }
-                });
-                await bot.answerCallbackQuery(queryId, { text: "Голос принят!" });
-                updatePoll(chatId, msgId, userId);
-            } else {
-                await bot.answerCallbackQuery(queryId, { text: "Ты что НОН!?" })
-            };
-        };
-
-        if (queryData == 'second_option') {
-            userCheck = await db.collection('polls').findOne({ chatId: chatId, 'votes.user': userId, state: 'active' });
-            if (!userCheck) {
-                await db.collection('polls').updateOne({ chatId: chatId, state: 'active' }, {
-                    $set: {
-                        votes: {
-                            user: userId,
-                            pollOption: 'second_option'
-                        }
-                    }
-                });
-                await bot.answerCallbackQuery(queryId, { text: "Голос принят!" });
-                updatePoll(chatId, msgId);
-            } else {
-                await bot.answerCallbackQuery(queryId, { text: "Ты что НОН?!" })
-            };
-        };
+        checkVote = await checkUserVote(chatId, userId);
+        if (!checkVote) {
+            await db.collection('polls').update({ chatId: chatId, state: 'active' }, {
+                $push: {
+                    [`vote.${userId}`]: queryData
+                }
+            });
+            await bot.answerCallbackQuery(queryId, { text: "Ну хоть по кнопке попал! Спасибо!" });
+            await updatePoll(chatId, msgId);
+        } else {
+            await bot.answerCallbackQuery(queryId, { text: "Ты что НОН!? Раз тыкнул и хватит!" });
+        }
     });
 }
