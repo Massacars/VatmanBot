@@ -8,7 +8,7 @@ module.exports = (schedule, bot, config, db) => {
 	eatFirstNotifRule.hour = [9, 12, 15, 18, 21];
 	eatFirstNotifRule.minute = 46;
 	eatLastNotifRule.hour = [10, 13, 16, 19, 22];
-	eatLastNotifRule.minute = 15;
+	eatLastNotifRule.minute = 10;
 	moneyNotifRule.hour = 19;
 	moneyNotifRule.minute = 17;
 	
