@@ -10,6 +10,10 @@ module.exports = (bot, config, db) => {
             keyboard: pollKeyboardData,
             title: decs,
             state: 'active',
+            options: {
+                first_option: answers[0][0],
+                second_option: answers[1][1]
+            },
             vote: {}
         }
         await db.collection('polls').insertOne(optionData);
@@ -31,8 +35,10 @@ module.exports = (bot, config, db) => {
                 secondOptionSummary = secondOptionSummary + 1;
             }
         }
-        votesFіrstOptionText = "За первый квест: " + firstOptionSummary + " бездельников.. ой сотрудников";
-        votesSecondOptionText = "За второй квест: " + secondOptionSummary + " бездельников.. ой сотрудников";
+        firstOptionText = pollObj.options.first_option;
+        secondOptionText = pollObj.options.second_option;
+        votesFіrstOptionText = "За квест:\n <b>" + firstOptionText + "</b>\n<b>" + firstOptionSummary + "</b> бездельников.. ой сотрудников\n";
+        votesSecondOptionText = "За квест:\n <b>" + secondOptionText + "</b>\n<b>" + secondOptionSummary + "</b> бездельников.. ой сотрудников\n";
         messageText = await db.collection('polls').findOne({ chatId: chatId, state: 'active' });
         newMessageText = messageText.title + "\n\n" + votesFіrstOptionText + "\n" + votesSecondOptionText;
         pollKeyboard = await db.collection('polls').findOne({ chatId: chatId, state: 'active' });
@@ -53,7 +59,7 @@ module.exports = (bot, config, db) => {
         const msgId = msg.message_id;
         const sourceMsgText = msg.text;
         const arrayPollData = sourceMsgText.split('\n\n');
-        const pollOptions = [];
+        const pollOptions = [];      
         var j = 0;
 
         for (i = 0; i < arrayPollData.length; i++) {
@@ -63,6 +69,7 @@ module.exports = (bot, config, db) => {
             }
         };
 
+        const desc = config.textmsq.teamQuestPoll + "\n1) " + pollOptions[0][0] + "\n2) " + pollOptions[1][1];
         chatPollState = await db.collection('polls').findOne({ chatId: chatId, state: "active" });
         if (chatPollState) {
             await db.collection('polls').updateMany({ chatId: chatId }, {
@@ -71,10 +78,10 @@ module.exports = (bot, config, db) => {
                     state: 'disabled'
                 }
             });
-            await bot.sendMessage(chatId, 'Вижу на прошлую голосовалку забили... \nНу ладно, открываем новую!');
-            await createPoll(chatId, config.textmsq.teamQuestPoll, pollOptions);
-        } else {
-            await createPoll(chatId, config.textmsq.teamQuestPoll, pollOptions);
+            await bot.sendMessage(chatId, config.textmsq.teamQuestPollReopen);
+            await createPoll(chatId, desc, pollOptions);
+        } else {            
+            await createPoll(chatId, desc, pollOptions);
         };
         await bot.deleteMessage(chatId, msgId);
 
@@ -94,10 +101,10 @@ module.exports = (bot, config, db) => {
                     [`vote.${userId}`]: queryData
                 }
             });
-            await bot.answerCallbackQuery(queryId, { text: "Ну хоть по кнопке попал! Спасибо!" });
+            await bot.answerCallbackQuery(queryId, { text: config.textmsq.vote });
             await updatePoll(chatId, msgId);
         } else {
-            await bot.answerCallbackQuery(queryId, { text: "Ты что НОН!? Раз тыкнул и хватит!" });
+            await bot.answerCallbackQuery(queryId, { text: config.textmsq.cheater });
         }
     });
 }
