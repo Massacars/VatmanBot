@@ -273,7 +273,7 @@ module.exports = (bot, config, db) => {
 	
 	bot.onText(/^\/craft/, async function (msg) {
 		const chatId = msg.chat.id;	
-		await bot.sendMessage(chatId, config.textmsq.craft, { parse_mode: 'HTML' });
+		await bot.sendMessage(chatId, config.textmsg.craft, { parse_mode: 'HTML' });
 	});
 
 	// bot.onText(/^\/config/, async function (msg) {
