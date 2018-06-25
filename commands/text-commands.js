@@ -275,4 +275,10 @@ module.exports = (bot, config, db) => {
 		const chatId = msg.chat.id;	
 		await bot.sendMessage(chatId, config.textmsq.craft, { parse_mode: 'HTML' });
 	});
+
+	// bot.onText(/^\/config/, async function (msg) {
+	// 	const userId = msg.chat.id;
+	// 	configText = JSON.stringify(config);
+	// 	await bot.sendMessage(userId, config, { parse_mode: 'HTML' });
+	// });	
 }
