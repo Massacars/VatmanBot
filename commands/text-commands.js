@@ -270,5 +270,9 @@ module.exports = (bot, config, db) => {
 		};
 		await bot.sendMessage(chatId, await generateEatMessage(chatObj), { parse_mode: 'HTML' });
 	});
-
+	
+	bot.onText(/^\/craft/, async function (msg) {
+		const chatId = msg.chat.id;	
+		await bot.sendMessage(chatId, config.textmsq.craft, { parse_mode: 'HTML' });
+	});
 }
