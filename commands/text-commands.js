@@ -278,12 +278,12 @@ module.exports = (bot, config, db) => {
 
     bot.onText(/^\/config/, async function(msg) {
 		const userId = msg.from.id;
-		const chatId = msg.chat.id
+		const chatId = msg.chat.id;			
         if (msg.chat.type == 'private') {
             const admin = await db.collection('users').findOne({ _id: userId, admin: true });
             if (admin) {
                 let configText = JSON.stringify(config, null, 4);
-                await bot.sendMessage(userId, configText, { parse_mode: 'HTML' });
+                await bot.sendMessage(userId, configText.replace(/("token".*\n.*\n.*\n.*\n.*\n.*\n.*\n)/,''), { parse_mode: 'HTML' });
             } else {
                 await bot.sendMessage(userId, config.phrases.gimmeadmin, { parse_mode: 'HTML' });
             }

@@ -1,2 +1,4 @@
+0.01.1
+Removed token and credentials info from /config command
 0.01.0
 Add /config command (working only for admins)
