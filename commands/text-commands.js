@@ -139,7 +139,7 @@ module.exports = (bot, config, db) => {
                     lastName: msg.from.last_name,
                     username: msg.from.username,
                     admin: false,
-                    state: { active: true, sendMsg: true, sendMsgChat: "" }
+                    state: { active: true, sendMsg: false, sendLvl: true, sendMsgChat: "" }
                 };
                 result = await db.collection('users').insertOne(userData);
                 if (result.result.ok) {
@@ -176,7 +176,7 @@ module.exports = (bot, config, db) => {
                     lastName: msg.from.last_name,
                     username: msg.from.username,
                     admin: true,
-                    state: { active: true, sendMsg: false, sendMsgChat: "" }
+                    state: { active: true, sendMsg: false, sendLvl: true, sendMsgChat: "" }
                 };
                 result = await db.collection('users').insertOne(userData);
                 if (result.result.ok) {
@@ -291,4 +291,59 @@ module.exports = (bot, config, db) => {
             await bot.sendMessage(chatId, config.phrases.noway, { parse_mode: 'HTML' });
         }
     });
+
+    bot.onText(/^\/helpmeplz/, async (msg) => {
+        const userId = msg.from.id;
+        const chatId = msg.chat.id;        
+        await bot.sendMessage(chatId, 'Какой у тебя уровень боец?');
+        const userObj = await db.collection('users').findOne({_id: userId});
+        if (userObj) {
+            db.collection('users').updateOne({_id: userId}, {
+                $set: {
+                    'state.sendLvl': true,
+                    'state.sendMsgChat': chatId
+                }
+            });
+        } else {
+            let userOptions = {
+                _id: userId,
+                name: msg.from.first_name,
+                lastName: msg.from.last_name,
+                username: msg.from.username,
+                admin: false,
+                state: { active: true, sendMsg: false, sendLvl: true, sendMsgChat: chatId }                
+            };
+            await db.collection('users').insertOne(userOptions);
+        };
+    });
+
+    bot.onText(/^(\d{1,2})$/, async (msg, match) => {        
+        const text = match[1];
+        const userId = msg.from.id;
+        const chatId = msg.chat.id;
+        const username = msg.from.username
+        const userObj = await db.collection('users').findOne({_id: userId, 'state.sendLvl': true, 'state.sendMsgChat': chatId});
+        if (userObj) {            
+            if (text > 0 && text < 10){
+                await bot.sendMessage(chatId, '@'+username+'\nКачай это, покупай это, ходи сюда //лоулвл', { parse_mode: 'HTML' });
+            };
+            if (text >= 10 && text < 20){
+                await bot.sendMessage(chatId, '@'+username+'\nКачай это, покупай это, ходи сюда //мидл', { parse_mode: 'HTML' });
+            };
+            if (text >= 20 && text < 30){
+                await bot.sendMessage(chatId, '@'+username+'\nКачай это, покупай это, ходи сюда //хай', { parse_mode: 'HTML' });
+            };
+            if (text >= 30){
+                await bot.sendMessage(chatId, '@'+username+'\nКачай это, покупай это, ходи сюда #переточ', { parse_mode: 'HTML' });
+            };                                    
+            db.collection('users').updateOne({_id: userId}, {
+                $set: {
+                    'state.sendLvl': false,
+                    'state.sendMsgChat': ""
+                }
+            });                       
+        } else {
+            await bot.sendMessage(chatId, config.phrases.error, { parse_mode: 'HTML' });
+        }
+    })
 }

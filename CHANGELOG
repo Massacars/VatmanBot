@@ -1,3 +1,7 @@
+0.02.0
+Add /helpmeplz command. 
+Add user db registration. 
+Add lvl listener and text response
 0.01.1
 Removed token and credentials info from /config command
 0.01.0
