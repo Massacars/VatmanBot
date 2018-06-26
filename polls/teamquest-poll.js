@@ -69,7 +69,7 @@ module.exports = (bot, config, db) => {
             }
         };
 
-        const desc = config.textmsq.teamQuestPoll + "\n1) " + pollOptions[0][0] + "\n2) " + pollOptions[1][1];
+        const desc = config.textmsg.teamQuestPoll + "\n1) " + pollOptions[0][0] + "\n2) " + pollOptions[1][1];
         chatPollState = await db.collection('polls').findOne({ chatId: chatId, state: "active" });
         if (chatPollState) {
             await db.collection('polls').updateMany({ chatId: chatId }, {
@@ -78,13 +78,12 @@ module.exports = (bot, config, db) => {
                     state: 'disabled'
                 }
             });
-            await bot.sendMessage(chatId, config.textmsq.teamQuestPollReopen);
+            await bot.sendMessage(chatId, config.textmsg.teamQuestPollReopen);
             await createPoll(chatId, desc, pollOptions);
         } else {            
             await createPoll(chatId, desc, pollOptions);
         };
         await bot.deleteMessage(chatId, msgId);
-
     });
 
     bot.on('callback_query', async function (query) {
@@ -101,10 +100,10 @@ module.exports = (bot, config, db) => {
                     [`vote.${userId}`]: queryData
                 }
             });
-            await bot.answerCallbackQuery(queryId, { text: config.textmsq.vote });
+            await bot.answerCallbackQuery(queryId, { text: config.textmsg.vote });
             await updatePoll(chatId, msgId);
         } else {
-            await bot.answerCallbackQuery(queryId, { text: config.textmsq.cheater });
+            await bot.answerCallbackQuery(queryId, { text: config.textmsg.cheater });
         }
     });
 }
