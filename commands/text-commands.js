@@ -97,18 +97,17 @@ module.exports = (bot, config, db) => {
         }
     });
 
-    bot.onText(/^\/money$/, async function(msg) {
+    bot.onText(/^\/money/, async function(msg) {
         const chatId = msg.chat.id;
         const messageId = msg.message_id;
         if (msg.chat.type == 'group' || msg.chat.type == 'supergroup') {
-            moneyMessage = await bot.sendMessage(chatId, config.pinmsg.money, { parse_mode: "Markdown" });
+            moneyMessage = await bot.sendMessage(chatId, config.pinmsg.money, { parse_mode: "HTML" });
             bot.pinChatMessage(chatId, moneyMessage.message_id);
             bot.deleteMessage(chatId, messageId);
         }
     });
 
-    bot.onText(/^\/eat$/, async function(msg) {
-        const userId = msg.from.id;
+    bot.onText(/^\/eat/, async function(msg) {        
         const chatId = msg.chat.id;
         const messageId = msg.message_id;
         if (msg.chat.type == 'group' || msg.chat.type == 'supergroup') {
@@ -190,7 +189,7 @@ module.exports = (bot, config, db) => {
         }
     });
 
-    bot.onText(/^\/add_chat$/, async function(msg) {
+    bot.onText(/^\/add_chat/, async function(msg) {
         const userId = msg.from.id;
         const chatId = msg.chat.id;
         const userObj = await db.collection('users').findOne({ _id: userId });
