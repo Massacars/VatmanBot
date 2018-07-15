@@ -1,8 +1,20 @@
+0.07.0
+Update /help text
+Update /eat text
+Update vatman 10k text
+Update scheduled msg text
+Add two new tags
+Add tags list
+Change regular expression for /money /eat /add_chat commands
+Disable error msg in /helpmeplz command
+
 0.02.0
 Add /helpmeplz command. 
 Add user db registration. 
 Add lvl listener and text response
+
 0.01.1
 Removed token and credentials info from /config command
+
 0.01.0
 Add /config command (working only for admins)
