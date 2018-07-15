@@ -342,7 +342,7 @@ module.exports = (bot, config, db) => {
                 }
             });                       
         } else {
-            await bot.sendMessage(chatId, config.phrases.error, { parse_mode: 'HTML' });
+            // await bot.sendMessage(chatId, config.phrases.error, { parse_mode: 'HTML' });
         }
     })
 }
