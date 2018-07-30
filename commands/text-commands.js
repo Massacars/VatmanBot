@@ -19,12 +19,12 @@ module.exports = (bot, config, db) => {
         return phrasesList;
     };
 
-    bot.onText(/^\/start$/, async function(msg) {
+    bot.onText(/^\/start$/, async function (msg) {
         const userId = msg.from.id;
         await bot.sendMessage(userId, config.phrases.hello);
     });
 
-    bot.onText(/^\/help$/, async function(msg) {
+    bot.onText(/^\/help$/, async function (msg) {
         const userId = msg.from.id;
         const chatId = msg.chat.id;
         if (msg.chat.type == 'group' || msg.chat.type == 'supergroup') {
@@ -34,18 +34,20 @@ module.exports = (bot, config, db) => {
         }
     });
 
-    bot.onText(/\/ping/, async function(msg) {
+    bot.onText(/\/ping/, async function (msg) {
+        const msgId = msg.message_id;
         const userId = msg.from.id;
         const chatId = msg.chat.id;
         if (msg.chat.type == 'group' || msg.chat.type == 'supergroup') {
-            await bot.sendMessage(chatId, config.phrases.ping);
+            await bot.sendMessage(chatId, config.phrases.ping, { reply_to_message_id: msgId });
         } else if (msg.chat.type == 'private') {
-            await bot.sendMessage(userId, config.phrases.ping);
+            await bot.sendMessage(userId, config.phrases.ping, { reply_to_message_id: msgId });
         }
         console.log(msg);
     });
 
-    bot.onText(/\/say/, async function(msg) {
+    bot.onText(/\/say/, async function (msg) {
+        const msgId = msg.message_id;
         const userId = msg.from.id;
         const chatId = msg.chat.id;
         const messageId = msg.message_id;
@@ -59,9 +61,9 @@ module.exports = (bot, config, db) => {
                         }
                     });
                 };
-                await bot.sendMessage(chatId, VatmanSay[VatmanTalkMsgID]);
+                await bot.sendMessage(chatId, VatmanSay[VatmanTalkMsgID], { reply_to_message_id: msgId });
             } else if (msg.chat.type == 'private') {
-                await bot.sendMessage(userId, VatmanSay[VatmanTalkMsgID]);
+                await bot.sendMessage(userId, VatmanSay[VatmanTalkMsgID], { reply_to_message_id: msgId });
             }
         } else {
             if (msg.chat.type == 'group' || msg.chat.type == 'supergroup') {
@@ -72,14 +74,14 @@ module.exports = (bot, config, db) => {
         }
     });
 
-    bot.onText(/^\/phrases$/, async function(msg) {
+    bot.onText(/^\/phrases$/, async function (msg) {
         const userId = msg.from.id;
         if (msg.chat.type == 'private') {
             await bot.sendMessage(userId, messageList(VatmanSay, VatmanSayLenght));
         }
     });
 
-    bot.onText(/\/coin/, async function(msg) {
+    bot.onText(/\/coin/, async function (msg) {
         const userId = msg.from.id;
         const chatId = msg.chat.id;
         if (coinHandFlip()) {
@@ -97,7 +99,7 @@ module.exports = (bot, config, db) => {
         }
     });
 
-    bot.onText(/^\/money/, async function(msg) {
+    bot.onText(/^\/money/, async function (msg) {
         const chatId = msg.chat.id;
         const messageId = msg.message_id;
         if (msg.chat.type == 'group' || msg.chat.type == 'supergroup') {
@@ -107,7 +109,7 @@ module.exports = (bot, config, db) => {
         }
     });
 
-    bot.onText(/^\/eat/, async function(msg) {        
+    bot.onText(/^\/eat/, async function (msg) {
         const chatId = msg.chat.id;
         const messageId = msg.message_id;
         if (msg.chat.type == 'group' || msg.chat.type == 'supergroup') {
@@ -117,14 +119,14 @@ module.exports = (bot, config, db) => {
         }
     });
 
-    bot.onText(/^\/list$/, async function(msg) {
+    bot.onText(/^\/list$/, async function (msg) {
         const userId = msg.from.id;
         if (msg.chat.type == 'private') {
             await bot.sendMessage(userId, config.pinmsg.list);
         }
     });
 
-    bot.onText(/^\/add_user$/, async function(msg) {
+    bot.onText(/^\/add_user$/, async function (msg) {
         const userId = msg.from.id;
         const chatId = msg.chat.id;
         if (msg.chat.type == 'private') {
@@ -152,7 +154,7 @@ module.exports = (bot, config, db) => {
         }
     });
 
-    bot.onText(/^\/add_admin$/, async function(msg) {
+    bot.onText(/^\/add_admin$/, async function (msg) {
         const userId = msg.from.id;
         const chatId = msg.chat.id;
         if (msg.chat.type == 'private') {
@@ -189,7 +191,7 @@ module.exports = (bot, config, db) => {
         }
     });
 
-    bot.onText(/^\/add_chat/, async function(msg) {
+    bot.onText(/^\/add_chat/, async function (msg) {
         const userId = msg.from.id;
         const chatId = msg.chat.id;
         const userObj = await db.collection('users').findOne({ _id: userId });
@@ -229,7 +231,7 @@ module.exports = (bot, config, db) => {
         }
     });
 
-    bot.on('message', async function(msg) {
+    bot.on('message', async function (msg) {
         const userId = msg.from.id;
         const chatId = msg.chat.id;
         const userObj = await db.collection('users').findOne({ _id: userId });
@@ -253,7 +255,7 @@ module.exports = (bot, config, db) => {
         };
     });
 
-    bot.onText(/^\/test$/, async function(msg) {
+    bot.onText(/^\/test$/, async function (msg) {
         const chatId = msg.chat.id;
         const formatString = require('../util/formatString');
         const { eatNotifString } = require('../strings/chats-strings');
@@ -270,19 +272,19 @@ module.exports = (bot, config, db) => {
         await bot.sendMessage(chatId, await generateEatMessage(chatObj), { parse_mode: 'HTML' });
     });
 
-    bot.onText(/^\/craft/, async function(msg) {
+    bot.onText(/^\/craft/, async function (msg) {
         const chatId = msg.chat.id;
         await bot.sendMessage(chatId, config.textmsg.craft, { parse_mode: 'HTML' });
     });
 
-    bot.onText(/^\/config/, async function(msg) {
-		const userId = msg.from.id;
-		const chatId = msg.chat.id;			
+    bot.onText(/^\/config/, async function (msg) {
+        const userId = msg.from.id;
+        const chatId = msg.chat.id;
         if (msg.chat.type == 'private') {
             const admin = await db.collection('users').findOne({ _id: userId, admin: true });
             if (admin) {
                 let configText = JSON.stringify(config, null, 4);
-                await bot.sendMessage(userId, configText.replace(/("token".*\n.*\n.*\n.*\n.*\n.*\n.*\n)/,''), { parse_mode: 'HTML' });
+                await bot.sendMessage(userId, configText.replace(/("token".*\n.*\n.*\n.*\n.*\n.*\n.*\n)/, ''), { parse_mode: 'HTML' });
             } else {
                 await bot.sendMessage(userId, config.phrases.gimmeadmin, { parse_mode: 'HTML' });
             }
@@ -293,11 +295,11 @@ module.exports = (bot, config, db) => {
 
     bot.onText(/^\/helpmeplz/, async (msg) => {
         const userId = msg.from.id;
-        const chatId = msg.chat.id;        
+        const chatId = msg.chat.id;
         await bot.sendMessage(chatId, 'Какой у тебя уровень боец?');
-        const userObj = await db.collection('users').findOne({_id: userId});
+        const userObj = await db.collection('users').findOne({ _id: userId });
         if (userObj) {
-            db.collection('users').updateOne({_id: userId}, {
+            db.collection('users').updateOne({ _id: userId }, {
                 $set: {
                     'state.sendLvl': true,
                     'state.sendMsgChat': chatId
@@ -310,37 +312,49 @@ module.exports = (bot, config, db) => {
                 lastName: msg.from.last_name,
                 username: msg.from.username,
                 admin: false,
-                state: { active: true, sendMsg: false, sendLvl: true, sendMsgChat: chatId }                
+                state: { active: true, sendMsg: false, sendLvl: true, sendMsgChat: chatId }
             };
             await db.collection('users').insertOne(userOptions);
         };
     });
 
-    bot.onText(/^(\d{1,2})$/, async (msg, match) => {        
+    bot.onText(/^(\d{1,2})$/, async (msg, match) => {
         const text = match[1];
         const userId = msg.from.id;
         const chatId = msg.chat.id;
         const username = msg.from.username
-        const userObj = await db.collection('users').findOne({_id: userId, 'state.sendLvl': true, 'state.sendMsgChat': chatId});
-        if (userObj) {            
-            if (text > 0 && text < 10){
-                await bot.sendMessage(chatId, '@'+username+'\nКачай это, покупай это, ходи сюда //лоулвл', { parse_mode: 'HTML' });
+        const userObj = await db.collection('users').findOne({ _id: userId, 'state.sendLvl': true, 'state.sendMsgChat': chatId });
+        if (userObj) {
+            if (text > 2 && text <= 5) {
+                await bot.sendMessage(chatId, '@' + username + '\n' + config.guides.lvl25, { parse_mode: 'Markdown' });
             };
-            if (text >= 10 && text < 20){
-                await bot.sendMessage(chatId, '@'+username+'\nКачай это, покупай это, ходи сюда //мидл', { parse_mode: 'HTML' });
+            if (text > 5 && text <= 9) {
+                await bot.sendMessage(chatId, '@' + username + '\n' + config.guides.lvl59, { parse_mode: 'Markdown' });
             };
-            if (text >= 20 && text < 30){
-                await bot.sendMessage(chatId, '@'+username+'\nКачай это, покупай это, ходи сюда //хай', { parse_mode: 'HTML' });
+            if (text > 9 && text <= 12) {
+                await bot.sendMessage(chatId, '@' + username + '\n' + config.guides.lvl912, { parse_mode: 'Markdown' });
             };
-            if (text >= 30){
-                await bot.sendMessage(chatId, '@'+username+'\nКачай это, покупай это, ходи сюда #переточ', { parse_mode: 'HTML' });
-            };                                    
-            db.collection('users').updateOne({_id: userId}, {
+            if (text > 12 && text <= 15) {
+                await bot.sendMessage(chatId, '@' + username + '\n' + config.guides.lvl1215, { parse_mode: 'Markdown' });
+            };
+            if (text > 15 && text <= 18) {
+                await bot.sendMessage(chatId, '@' + username + '\n' + config.guides.lvl1518, { parse_mode: 'Markdown' });
+            };
+            if (text > 18 && text <= 22) {
+                await bot.sendMessage(chatId, '@' + username + '\n' + config.guides.lvl1822, { parse_mode: 'Markdown' });
+            };
+            if (text > 22 && text <= 26) {
+                await bot.sendMessage(chatId, '@' + username + '\n' + config.guides.lvl2226, { parse_mode: 'Markdown' });
+            };
+            if (text > 26) {
+                await bot.sendMessage(chatId, '@' + username + '\nЭто для маленьких! Старый, жирный ублюдок!', { parse_mode: 'HTML' });
+            };
+            db.collection('users').updateOne({ _id: userId }, {
                 $set: {
                     'state.sendLvl': false,
                     'state.sendMsgChat': ""
                 }
-            });                       
+            });
         } else {
             // await bot.sendMessage(chatId, config.phrases.error, { parse_mode: 'HTML' });
         }
