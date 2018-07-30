@@ -3,15 +3,21 @@ module.exports = (schedule, bot, config, db) => {
 	const { eatNotifString } = require('../strings/chats-strings');
 
 	const eatFirstNotifRule = new schedule.RecurrenceRule();
-	const eatLastNotifRule = new schedule.RecurrenceRule();
-	const moneyNotifRule = new schedule.RecurrenceRule();
 	eatFirstNotifRule.hour = [9, 12, 15, 18, 21];
 	eatFirstNotifRule.minute = 46;
+
+	const eatLastNotifRule = new schedule.RecurrenceRule();
 	eatLastNotifRule.hour = [10, 13, 16, 19, 22];
 	eatLastNotifRule.minute = 10;
+
+	const moneyNotifRule = new schedule.RecurrenceRule();
 	moneyNotifRule.hour = 19;
 	moneyNotifRule.minute = 17;
-	
+
+	const sleepNotifRule = new schedule.RecurrenceRule();
+	sleepNotifRule.hour = 22;
+	sleepNotifRule.minute = 5;
+
 	async function generateEatMessage(chatObj) {
 		let chatTag = "";
 		if (chatObj.tag) {
@@ -41,9 +47,17 @@ module.exports = (schedule, bot, config, db) => {
 
 	schedule.scheduleJob(moneyNotifRule, async () => {
 		const notifyArr = await db.collection('chats').find({ state: true }).toArray();
-		notifyArr.forEach(async (chats) => {			
+		notifyArr.forEach(async (chats) => {
 			scheduledMsg = await bot.sendMessage(chats._id, config.pinmsg.money, { parse_mode: "HTML" });
 			bot.pinChatMessage(chats._id, scheduledMsg.message_id);
+		});
+	});
+
+	schedule.scheduleJob(sleepNotifRule, async () => {
+		const notifyArr = await db.collection('chats').find({ state: true }).toArray();
+		notifyArr.forEach(async (chats) => {
+			scheduledMsg = await bot.sendMessage(chats._id, config.pinmsg.sleep, { parse_mode: "HTML" });
+			bot.pinChatMessage(chats._id, scheduledMsg.message_id, { disable_notification: true });
 		});
 	});
 }

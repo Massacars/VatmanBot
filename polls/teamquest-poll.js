@@ -2,8 +2,8 @@ module.exports = (bot, config, db) => {
 
     async function createPoll(chatId, decs, answers) {
         pollKeyboardData = [
-            [{ text: answers[0][0], callback_data: 'first_option' }],
-            [{ text: answers[1][1], callback_data: 'second_option' }]
+            [{ text: "Первый квест", callback_data: 'first_option' }],
+            [{ text: "Второй квест", callback_data: 'second_option' }]
         ]
         optionData = {
             chatId: chatId,
@@ -37,8 +37,8 @@ module.exports = (bot, config, db) => {
         }
         firstOptionText = pollObj.options.first_option;
         secondOptionText = pollObj.options.second_option;
-        votesFіrstOptionText = "За квест:\n <b>" + firstOptionText + "</b>\n<b>" + firstOptionSummary + "</b> бездельников.. ой сотрудников\n";
-        votesSecondOptionText = "За квест:\n <b>" + secondOptionText + "</b>\n<b>" + secondOptionSummary + "</b> бездельников.. ой сотрудников\n";
+        votesFіrstOptionText = "За квест:\n <b>" + firstOptionText + "</b>\n\nКоличество бездельников: <b>" + firstOptionSummary + "</b>\n";
+        votesSecondOptionText = "За квест:\n <b>" + secondOptionText + "</b>\n\nКоличество бездельников: <b>" + secondOptionSummary + "</b>\n";
         messageText = await db.collection('polls').findOne({ chatId: chatId, state: 'active' });
         newMessageText = messageText.title + "\n\n" + votesFіrstOptionText + "\n" + votesSecondOptionText;
         pollKeyboard = await db.collection('polls').findOne({ chatId: chatId, state: 'active' });
@@ -59,7 +59,7 @@ module.exports = (bot, config, db) => {
         const msgId = msg.message_id;
         const sourceMsgText = msg.text;
         const arrayPollData = sourceMsgText.split('\n\n');
-        const pollOptions = [];      
+        const pollOptions = [];
         var j = 0;
 
         for (i = 0; i < arrayPollData.length; i++) {
@@ -80,7 +80,7 @@ module.exports = (bot, config, db) => {
             });
             await bot.sendMessage(chatId, config.textmsg.teamQuestPollReopen);
             await createPoll(chatId, desc, pollOptions);
-        } else {            
+        } else {
             await createPoll(chatId, desc, pollOptions);
         };
         await bot.deleteMessage(chatId, msgId);

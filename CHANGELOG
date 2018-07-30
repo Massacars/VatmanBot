@@ -1,9 +1,23 @@
+0.09.0
+Teams:
+Add new quest autopin
+Add finished quest report autopin
+Add team config (chat id, leader id)
+Add factory reminder (18.00)
+Change text on quest poll button
+Change text on quest poll results
+Divisions:
+Add sleep reminder (22.05)
+Other:
+Add /help translation
+Update pharases collection
+Update scheduled msg text
+
 0.08.0
 Add guides texts
 Update scheduled msg text
 Update pharases collection
 Change /say command message to reply mode
-
 
 0.07.2
 Change /ping command message to reply mode
