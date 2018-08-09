@@ -272,11 +272,6 @@ module.exports = (bot, config, db) => {
         await bot.sendMessage(chatId, await generateEatMessage(chatObj), { parse_mode: 'HTML' });
     });
 
-    bot.onText(/^\/craft/, async function (msg) {
-        const chatId = msg.chat.id;
-        await bot.sendMessage(chatId, config.textmsg.craft, { parse_mode: 'HTML' });
-    });
-
     bot.onText(/^\/config/, async function (msg) {
         const userId = msg.from.id;
         const chatId = msg.chat.id;
@@ -346,8 +341,20 @@ module.exports = (bot, config, db) => {
             if (text > 22 && text <= 26) {
                 await bot.sendMessage(chatId, '@' + username + '\n' + config.guides.lvl2226, { parse_mode: 'Markdown' });
             };
-            if (text > 26) {
-                await bot.sendMessage(chatId, '@' + username + '\nЭто для маленьких! Старый, жирный ублюдок!', { parse_mode: 'HTML' });
+            if (text > 26 && text <= 30) {
+                await bot.sendMessage(chatId, '@' + username + '\n' + config.guides.lvl2630, { parse_mode: 'Markdown' });
+            }; 
+            if (text > 30 && text <= 35) {
+                await bot.sendMessage(chatId, '@' + username + '\n' + config.guides.lvl3035, { parse_mode: 'Markdown' });
+            };                                   
+            if (text > 35 && text <= 38) {
+                await bot.sendMessage(chatId, '@' + username + '\n' + config.guides.lvl3538, { parse_mode: 'Markdown' });
+            };    
+            if (text > 38 && text <= 42) {
+                await bot.sendMessage(chatId, '@' + username + '\n' + config.guides.lvl3842, { parse_mode: 'Markdown' });
+            };            
+            if (text > 42) {
+                await bot.sendMessage(chatId, '@' + username + '\nКак же достали эти старые #переточи...', { parse_mode: 'HTML' });
             };
             db.collection('users').updateOne({ _id: userId }, {
                 $set: {

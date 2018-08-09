@@ -15,7 +15,6 @@
     "url": "https://github.com/Massacars/Vatman.bot/issues"
   },
   "homepage": "https://github.com/Massacars/Vatman.bot#readme",
-  "description": "",
   "dependencies": {
     "config": "^1.30.0",
     "mongodb": "^3.0.10",
@@ -24,5 +23,7 @@
     "node-telegram-bot-api": "^0.30.0",
     "require-fu": "^1.0.0",
     "tgfancy": "^0.13.0"
-  }
+  },
+  "devDependencies": {},
+  "description": ""
 }

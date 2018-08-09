@@ -4,11 +4,11 @@ module.exports = (schedule, bot, config, db) => {
 
 	const eatFirstNotifRule = new schedule.RecurrenceRule();
 	eatFirstNotifRule.hour = [9, 12, 15, 18, 21];
-	eatFirstNotifRule.minute = 46;
+	eatFirstNotifRule.minute = 50;
 
 	const eatLastNotifRule = new schedule.RecurrenceRule();
 	eatLastNotifRule.hour = [10, 13, 16, 19, 22];
-	eatLastNotifRule.minute = 10;
+	eatLastNotifRule.minute = 05;
 
 	const moneyNotifRule = new schedule.RecurrenceRule();
 	moneyNotifRule.hour = 19;

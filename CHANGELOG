@@ -1,3 +1,11 @@
+0.10.0
+Add all quides texts (2 lvl - 42 lvl)
+Change scheduled message time from xx.10 to xx.05
+Change scheduled message time from xx.46 to xx.50
+Removed /craft command (Develop new feature)
+Update project dependencies
+Fix error message in node-telegram-bot-api
+
 0.09.0
 Teams:
 Add new quest autopin
