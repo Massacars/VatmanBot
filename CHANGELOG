@@ -1,3 +1,6 @@
+0.10.6
+Change regular expression for /info command
+
 0.10.5
 Change report trigger from 10000 points to 100 points
 Change sleep notification time from xx.05 to xx.10
