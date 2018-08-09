@@ -1,3 +1,8 @@
+0.10.5
+Change report trigger from 10000 points to 100 points
+Change sleep notification time from xx.05 to xx.10
+Change /help command to /info
+
 0.10.0
 Add all quides texts (2 lvl - 42 lvl)
 Change scheduled message time from xx.10 to xx.05

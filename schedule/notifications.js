@@ -16,7 +16,7 @@ module.exports = (schedule, bot, config, db) => {
 
 	const sleepNotifRule = new schedule.RecurrenceRule();
 	sleepNotifRule.hour = 22;
-	sleepNotifRule.minute = 5;
+	sleepNotifRule.minute = 10;
 
 	async function generateEatMessage(chatObj) {
 		let chatTag = "";

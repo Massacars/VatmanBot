@@ -24,7 +24,7 @@ module.exports = (bot, config, db) => {
         await bot.sendMessage(userId, config.phrases.hello);
     });
 
-    bot.onText(/^\/help$/, async function (msg) {
+    bot.onText(/^\/info$/, async function (msg) {
         const userId = msg.from.id;
         const chatId = msg.chat.id;
         if (msg.chat.type == 'group' || msg.chat.type == 'supergroup') {
