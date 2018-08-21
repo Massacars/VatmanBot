@@ -24,6 +24,7 @@ MongoClient.connect(url, async function(err, client) {
 	requireFu(`${__dirname}/schedule`)(Scheduler, bot, config, db);
 	requireFu(`${__dirname}/polls`)(bot, config, db);
 	requireFu(`${__dirname}/triggers`)(bot, config, db);
+	requireFu(`${__dirname}/tops`)(bot, config, db);
 
 	process.on('SIGINT', async () => {
 		await client.close(false);

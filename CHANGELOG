@@ -1,3 +1,24 @@
+0.20.0
+Add tops feature: {
+    Add reports parser
+    Add tops command
+    Add topml command
+    Add add_topml command
+}
+Add root user (config)
+Add disable_chat command (only for admin)
+Add remove_chat command (only for admin)
+Change add_admin command to reply mode
+Change add_user command to reply mode
+Change helpmeplz command to reply mode
+Update pharases collection
+Update scheduled message text
+Exclude Vatman uber-reports
+Removed say command reply mode
+Removed cnfig command
+Other:
+Add eslint dependencies
+
 0.10.6
 Change regular expression for /info command
 

@@ -24,6 +24,9 @@
     "require-fu": "^1.0.0",
     "tgfancy": "^0.13.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "eslint": "^5.4.0",
+    "eslint-config-google": "^0.9.1"
+  },
   "description": ""
 }
