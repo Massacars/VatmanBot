@@ -98,22 +98,22 @@ module.exports = (bot, config, db) => {
                 topmlArr.sort().forEach(async (topml) => {
                     switch (i) {
                         case 1:
-                            top = '🥇 ';
+                            top = '🥇  ';
                             break;
                         case 2:
-                            top = '🥈 ';
+                            top = '🥈  ';
                             break;
                         case 3:
-                            top = '🥉 ';
+                            top = '🥉  ';
                             break;
                         default:
-                            top = "";
+                            top = 'i  ';
                             break;
                     };
-                    topStr = topStr + top + ' ' + topml.username + ' - проинвестировано в трубу: -' + topml.tops.topml + '💵\n';
+                    topStr = topStr + '▪️' + top + '<b>' + topml.username + '</b>' + '   -' + topml.tops.topml + '💵\n';
                     i++;
                 })
-                await bot.sendMessage(chatId, topStr);
+                await bot.sendMessage(chatId, '💰 Топ горе-инвесторов:\n\n' + topStr, {parse_mode: 'HTML'});
             } else {
                 await bot.sendMessage(chatId, config.topmsg.empty);
             }
