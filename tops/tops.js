@@ -107,7 +107,7 @@ module.exports = (bot, config, db) => {
                             top = '🥉  ';
                             break;
                         default:
-                            top = 'i  ';
+                            top = i + '  ';
                             break;
                     };
                     topStr = topStr + '▪️' + top + '<b>' + topml.username + '</b>' + '   -' + topml.tops.topml + '💵\n';
