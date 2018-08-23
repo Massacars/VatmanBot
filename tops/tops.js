@@ -95,7 +95,7 @@ module.exports = (bot, config, db) => {
             if (topmlArr.length >= 1) {
                 let topStr = "";
                 let i = 1;
-                topmlArr.sort().forEach(async (topml) => {
+                topmlArr.forEach(async (topml) => {
                     switch (i) {
                         case 1:
                             top = '🥇  ';
