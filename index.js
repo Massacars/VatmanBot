@@ -8,10 +8,10 @@ const MongoClient = require('mongodb').MongoClient;
 const bot = new TelegramBot(config.token, { polling: true });
 
 // Connection URL
-const url = 'mongodb://localhost:27017';
+const url = 'mongodb://' + config.db.user + ':' + config.db.password + '@' + config.db.host + ':' + config.db.port + '/' + config.db.database; 
  
 // Database Name
-const dbName = 'VatmanBot';
+const dbName = config.db.database;
 
 // Use connect method to connect to the server
 MongoClient.connect(url, async function(err, client) {
