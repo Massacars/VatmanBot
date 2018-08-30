@@ -95,6 +95,7 @@ module.exports = (bot, config, db) => {
             if (topmlArr.length >= 1) {
                 let topStr = "";
                 let i = 1;
+                let topmlSumm = 0;
                 topmlArr.forEach(async (topml) => {
                     switch (i) {
                         case 1:
@@ -111,9 +112,10 @@ module.exports = (bot, config, db) => {
                             break;
                     };
                     topStr = topStr + '▪️' + top + '<b>' + topml.username + '</b>' + '   -' + topml.tops.topml + '💵\n';
+                    topmlSumm = topmlSumm + topml.tops.topml;
                     i++;
                 })
-                await bot.sendMessage(chatId, '💰 Топ горе-инвесторов:\n\n' + topStr, {parse_mode: 'HTML'});
+                await bot.sendMessage(chatId, '💰 Топ горе-инвесторов.\nОтдел: ' + chatObj.name + '\n\n' + topStr + '\nСуммарно по отделу <b>[' + chatObj.tag + ']</b>: ' + topmlSumm + '💵', {parse_mode: 'HTML'});
             } else {
                 await bot.sendMessage(chatId, config.topmsg.empty);
             }
