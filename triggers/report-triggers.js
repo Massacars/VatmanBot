@@ -8,7 +8,7 @@ module.exports = (bot, config, db) => {
         const money = msgText.match(/💵Деньги: (.*)/);
         const points = msgText.match(/🏆Твой вклад: \+(.*)/);
        
-        if (money[1] && (money[1] == 0 && (msg.forward_from.username === 'StartupWarsBot' || msg.forward_from.username === 'StartupWars01Bot'))) {
+        if (money && (money[1] == 0 && (msg.forward_from.username === 'StartupWarsBot' || msg.forward_from.username === 'StartupWars01Bot'))) {
             await bot.sendDocument(chatId, config.files.fire, { caption: config.textmsg.moneyCaption, reply_to_message_id: msgId });
         };
         if (points && (points[1] > 100 && (msg.forward_from.username === 'StartupWarsBot' || msg.forward_from.username === 'StartupWars01Bot'))) {
