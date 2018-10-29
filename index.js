@@ -1,4 +1,4 @@
-process.env["NTBA_FIX_319"] = 1;
+process.env['NTBA_FIX_319'] = 1;
 
 const TelegramBot = require('node-telegram-bot-api');
 const config = require('config');
@@ -16,7 +16,7 @@ const dbName = config.db.database;
 // Use connect method to connect to the server
 MongoClient.connect(url, async function(err, client) {
 
-	console.log("Connected successfully to server");
+	console.log('Connected successfully to server');
 
 	const db = client.db(dbName);
 

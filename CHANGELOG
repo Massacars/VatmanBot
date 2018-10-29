@@ -1,97 +1,122 @@
+0.30.9
+
+    Update .gitignore
+    Include ES6 features
+    Include eslint formatting
+    Fix coinFlip, coinHandFlip and messageList functions
+    Add admin rights check to /eat and /money commands
+    Change notifications time (-1 to +2GMT)
+
 0.30.3
-Update texts
+
+    Update texts
 
 0.30.2
-Update texts
+
+    Update texts
 
 0.30.1
-Add division name in topml command
-Add division summary in topml command
+
+    Add division name in topml command
+    Add division summary in topml command
 
 0.30.0
-Add mongo authorization
+
+    Add mongo authorization
 
 0.20.0
-Add tops feature: {
-    Add reports parser
-    Add tops command
-    Add topml command
-    Add add_topml command
-}
-Add root user (config)
-Add disable_chat command (only for admin)
-Add remove_chat command (only for admin)
-Change add_admin command to reply mode
-Change add_user command to reply mode
-Change helpmeplz command to reply mode
-Update pharases collection
-Update scheduled message text
-Exclude Vatman uber-reports
-Removed say command reply mode
-Removed cnfig command
-Other:
-Add eslint dependencies
+
+    Add tops feature: {
+        Add reports parser
+        Add tops command
+        Add topml command
+        Add add_topml command
+    }
+    Add root user (config)
+    Add disable_chat command (only for admin)
+    Add remove_chat command (only for admin)
+    Change add_admin command to reply mode
+    Change add_user command to reply mode
+    Change helpmeplz command to reply mode
+    Update pharases collection
+    Update scheduled message text
+    Exclude Vatman uber-reports
+    Removed say command reply mode
+    Removed cnfig command
+    Other:
+    Add eslint dependencies
 
 0.10.6
-Change regular expression for /info command
+
+    Change regular expression for /info command
 
 0.10.5
-Change report trigger from 10000 points to 100 points
-Change sleep notification time from xx.05 to xx.10
-Change /help command to /info
+
+    Change report trigger from 10000 points to 100 points
+    Change sleep notification time from xx.05 to xx.10
+    Change /help command to /info
 
 0.10.0
-Add all quides texts (2 lvl - 42 lvl)
-Change scheduled message time from xx.10 to xx.05
-Change scheduled message time from xx.46 to xx.50
-Removed /craft command (Develop new feature)
-Update project dependencies
-Fix error message in node-telegram-bot-api
+
+    Add all quides texts (2 lvl - 42 lvl)
+    Change scheduled message time from xx.10 to xx.05
+    Change scheduled message time from xx.46 to xx.50
+    Removed /craft command (Develop new feature)
+    Update project dependencies
+    Fix error message in node-telegram-bot-api
 
 0.09.0
-Teams:
-Add new quest autopin
-Add finished quest report autopin
-Add team config (chat id, leader id)
-Add factory reminder (18.00)
-Change text on quest poll button
-Change text on quest poll results
-Divisions:
-Add sleep reminder (22.05)
-Other:
-Add /help translation
-Update pharases collection
-Update scheduled msg text
+
+    Teams:
+    Add new quest autopin
+    Add finished quest report autopin
+    Add team config (chat id, leader id)
+    Add factory reminder (18.00)
+    Change text on quest poll button
+    Change text on quest poll results
+    Divisions:
+    Add sleep reminder (22.05)
+    Other:
+    Add /help translation
+    Update pharases collection
+    Update scheduled msg text
 
 0.08.0
-Add guides texts
-Update scheduled msg text
-Update pharases collection
-Change /say command message to reply mode
+
+    Add guides texts
+    Update scheduled msg text
+    Update pharases collection
+    Change /say command message to reply mode
 
 0.07.2
-Change /ping command message to reply mode
+
+    Change /ping command message to reply mode
 
 0.07.1
-Update craft text
+
+    Update craft text
 
 0.07.0
-Update /help text
-Update /eat text
-Update vatman 10k text
-Update scheduled msg text
-Add two new tags
-Add tags list
-Change regular expression for /money /eat /add_chat commands
-Disable error msg in /helpmeplz command
+
+    Update /help text
+    Update /eat text
+    Update vatman 10k text
+    Update scheduled msg text
+    Add two new tags
+    Add tags list
+    Change regular expression for /money /eat /add_chat commands
+    Disable error msg in /helpmeplz command
 
 0.02.0
-Add /helpmeplz command. 
-Add user db registration. 
-Add lvl listener and text response
+
+    Add /helpmeplz command. 
+    Add user db registration. 
+    Add lvl listener and text response
 
 0.01.1
-Removed token and credentials info from /config command
+
+    Removed token and credentials info from /config command
 
 0.01.0
-Add /config command (working only for admins)
+
+    Add /config command (working only for admins)

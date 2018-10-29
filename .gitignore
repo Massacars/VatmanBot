@@ -2,3 +2,4 @@ node_modules/
 robots.txt
 config/local.json
 .vscode/
+.eslintrc.json
