@@ -1,9 +1,13 @@
+0.35.1
+
+    Add full tops drop command (drop all Divisions)
+
 0.35.0
 
     Totaly reworked tops feature 
     Add two new triggers for /battle reports
     Add two new stats reports
-    Add two new root commands (drop tops, truncate tops)
+    Add two new root commands (drop division top, truncate division top)
     Update some trigger phrases
     Change team notification time
 

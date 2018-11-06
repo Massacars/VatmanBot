@@ -38,4 +38,25 @@ module.exports = (bot, config, db) => {
 			await bot.sendMessage(chatId, config.phrases.hello);
 		}
 	});
+
+	bot.onText(/\/hard_drop/, async msg => {
+		const userId = msg.from.id;
+		const chatId = msg.chat.id;
+		const checkUser = await db.collection('users').findOne({
+			_id: userId,
+			admin: true
+		});
+		if (checkUser._id == config.admin) {
+			await db.collection('users').updateMany({
+				'tops.topml': {
+					$gt: 0
+				}
+			}, {
+				$set: {
+					tops: {}
+				}
+			});
+			await bot.sendMessage(chatId, config.phrases.hello);
+		}
+	});
 };
