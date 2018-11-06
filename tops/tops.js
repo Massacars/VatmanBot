@@ -1,126 +1,227 @@
 module.exports = (bot, config, db) => {
 
-    bot.onText(/Твои результаты в битве на \d{2} часов: @startupwarsreport/, async function (msg) {
-        if (msg.forward_from || (msg.forward_from.username === 'StartupWarsBot' || msg.forward_from.username === 'StartupWars01Bot')) {
-            const msgId = msg.message_id;
-            const msgText = msg.text;
-            const chatId = msg.chat.id;
-            const userId = msg.from.id;
-            const msgDate = msg.forward_date;
-            const dateNow = Math.floor(Date.now() / 1000);
+	const text = config.topmsg; //tops texts
 
-            if (msgText.match(/💵Деньги: -\$(.*)/)) {
-                if (dateNow - msgDate < 72000) {
-                    const match = msgText.match(/💵Деньги: -\$(.*)/);
-                    const clearMatch = match[1];
-                    const money = +clearMatch;
-                    const userObj = await db.collection('users').findOne({ _id: userId });
+	//set 'state' field in true value (divisions)
+	const chatTopActivator = async (chatId, topName) => {
+		const chatObj = await db.collection('chats').findOne({
+			_id: chatId
+		});
+		if (chatObj) {
+			chatObj.tops[topName] = true;
+			await db.collection('chats').updateOne({
+				_id: chatId
+			}, {
+				$set: chatObj
+			});
+			return ('updated');
+		} else {
+			return ('not found');
+		}
+	};
 
-                    if (userObj) {
-                        const topml = userObj.tops.hasOwnProperty('topml');
-                        const date = userObj.tops.hasOwnProperty('date');
-                        let summ = 0;
-                        let forwardDate = new Date();
+	//generate statistic string (users)
+	const generateTopStats = async (chatId, topName, topEmoji) => {
+		const usersArr = await db.collection('users').find({
+			[`tops.${topName}.points`]: {
+				$gt: 0
+			},
+			division: chatId
+		}).sort({
+			points: -1
+		}).toArray();
 
-                        summ = (!topml) ? summ = +money : summ = +money + userObj.tops.topml;
-                        forwardDate = (!date) ? forwardDate = dateNow : forwardDate = userObj.tops.date;
-                        if (msgDate == forwardDate) {
-                            await bot.sendMessage(chatId, config.topmsg.reportready, { reply_to_message_id: msgId });
-                        } else {
-                            await db.collection('users').updateOne({ _id: userId }, {
-                                $set: {
-                                    tops: {
-                                        topml: summ,
-                                        date: msgDate,
-                                    },
-                                    division: msg.chat.id,
-                                }
-                            });
-                            await bot.sendMessage(chatId, config.topmsg.report, { reply_to_message_id: msgId });
-                        }
-                    } else {
-                        const userData = {
-                            _id: userId,
-                            name: msg.from.first_name,
-                            lastName: msg.from.last_name,
-                            username: '@' + msg.from.username,
-                            admin: false,
-                            division: msg.chat.id,
-                            state: { active: true, sendMsg: false, sendLvl: false, sendMsgChat: "" },
-                            tops: { topml: money, date: msgDate }
-                        };
-                        await db.collection('users').insertOne(userData);
-                        await bot.sendMessage(chatId, config.topmsg.report, { reply_to_message_id: msgId });
-                    }
-                } else {
-                    await bot.sendMessage(chatId, config.topmsg.oldreport, { reply_to_message_id: msgId });
-                }
-            }
-        }
-    });
+		if (usersArr.length !== -1) {
+			let statsSring = '';
+			let i = 1;
+			let statsSumm = 0;
+			let top = '';
 
-    bot.onText(/\/tops/, async function (msg) {
-        const chatId = msg.chat.id;
-        if (msg.chat.type == 'qroup' || msg.chat.type == 'supergroup') {
-            bot.sendMessage(chatId, "Список топов:\n\n💵 Топ неудачных инвесторов - /topml (добавить - /add_topml)");
-        }
-    });
+			usersArr.forEach(async (user) => {
+				switch (i) {
+				case 1:
+					top = '🥇';
+					break;
+				case 2:
+					top = '🥈';
+					break;
+				case 3:
+					top = '🥉';
+					break;
+				default:
+					top = ` ${i} `;
+					break;
+				}
+				statsSring = statsSring + `
+				▪️${top}  <b>${user.username}</b>	${user.tops[topName].points} ${topEmoji}`;
+				statsSumm = statsSumm + user.tops[topName].points;
+				i++;
+			});
+			statsSumm = `${statsSumm} ${topEmoji}`;
+			return ({
+				statsSring,
+				statsSumm
+			});
+		} else {
+			return ('false');
+		}
+	};
 
-    bot.onText(/\/add_topml/, async function (msg) {
-        const chatId = msg.chat.id;
-        if (msg.chat.type == 'qroup' || msg.chat.type == 'supergroup') {
-            const chatObj = await db.collection('chats').findOne({ _id: chatId });
-            if (chatObj) {
-                await db.collection('chats').updateOne({ _id: chatId }, {
-                    $set: {
-                        tops: {
-                            topml: true
-                        }
-                    }
-                });
-                await bot.sendMessage(chatId, config.topmsg.topactive);
-            } else {
-                await bot.sendMessage(chatId, config.topmsg.chatinactive);
-            }
-        }
-    });
+	//generate report message
+	const generateTopReport = async ({
+		name,
+		tag,
+		stats,
+		summ,
+		string
+	}) => {
+		const topString = `
+		${string}
+		Отдел: ${name}						
+		${stats}
+		
+		Суммарно по отделу <b>[${tag}]</b>: ${summ}
+		`;
+		return (topString);
+	};
 
-    bot.onText(/\/topml/, async function (msg) {
-        const chatId = msg.chat.id;
-        const chatObj = await db.collection('chats').findOne({ _id: chatId });
-        const chatActive = (chatObj) ? chatObj.tops.hasOwnProperty('topml') : false;
+	bot.onText(/\/tops/, async function (msg) {
+		const chatId = msg.chat.id;
+		if (msg.chat.type == 'qroup' || msg.chat.type == 'supergroup') {
+			bot.sendMessage(chatId,	'Список топов:\n💰 Топ горе инвесторов - /topml (вкл. - /add_topml)\n0️⃣ Топ держателей нулей - /topzero (вкл. - /add_topzero)\n🚕 Топ уберпопулярных - /topuber (вкл. - /add_topuber)');
+		}
+	});
 
-        if (chatActive) {
-            const topmlArr = await db.collection('users').find({ "tops.topml": { $gt: 0 }, division: chatId }).sort({ "tops.topml": -1 }).toArray();
-            if (topmlArr.length >= 1) {
-                let topStr = "";
-                let i = 1;
-                let topmlSumm = 0;
-                topmlArr.forEach(async (topml) => {
-                    switch (i) {
-                        case 1:
-                            top = '🥇  ';
-                            break;
-                        case 2:
-                            top = '🥈  ';
-                            break;
-                        case 3:
-                            top = '🥉  ';
-                            break;
-                        default:
-                            top = ' ' + i + '  ';
-                            break;
-                    };
-                    topStr = topStr + '▪️' + top + '<b>' + topml.username + '</b>' + '   -' + topml.tops.topml + '💵\n';
-                    topmlSumm = topmlSumm + topml.tops.topml;
-                    i++;
-                })
-                await bot.sendMessage(chatId, '💰 Топ горе-инвесторов.\nОтдел: ' + chatObj.name + '\n\n' + topStr + '\nСуммарно по отделу <b>[' + chatObj.tag + ']</b>: ' + topmlSumm + '💵', {parse_mode: 'HTML'});
-            } else {
-                await bot.sendMessage(chatId, config.topmsg.empty);
-            }
-        } else {
-            await bot.sendMessage(chatId, config.topmsg.topinactive);
-        }
-    })
-}
+	bot.onText(/\/add_topml/, async function (msg) {
+		const chatId = msg.chat.id;
+		const topName = 'topml';
+		if (msg.chat.type == 'qroup' || msg.chat.type == 'supergroup') {
+			const updateRes = await chatTopActivator(chatId, topName);
+			if (updateRes == 'updated') {
+				await bot.sendMessage(chatId, config.topmsg.topactive);
+			} else {
+				await bot.sendMessage(chatId, config.topmsg.chatinactive);
+			}
+		}
+	});
+
+	bot.onText(/\/add_topzero/, async function (msg) {
+		const chatId = msg.chat.id;
+		const topName = 'topzero';
+		if (msg.chat.type == 'qroup' || msg.chat.type == 'supergroup') {
+			const updateRes = await chatTopActivator(chatId, topName);
+			if (updateRes == 'updated') {
+				await bot.sendMessage(chatId, config.topmsg.topactive);
+			} else {
+				await bot.sendMessage(chatId, config.topmsg.chatinactive);
+			}
+		}
+	});
+
+	bot.onText(/\/add_topuber/, async function (msg) {
+		const chatId = msg.chat.id;
+		const topName = 'topuber';
+		if (msg.chat.type == 'qroup' || msg.chat.type == 'supergroup') {
+			const updateRes = await chatTopActivator(chatId, topName);
+			if (updateRes == 'updated') {
+				await bot.sendMessage(chatId, config.topmsg.topactive);
+			} else {
+				await bot.sendMessage(chatId, config.topmsg.chatinactive);
+			}
+		}
+	});
+
+	bot.onText(/\/topml/, async function (msg) {
+		const chatId = msg.chat.id;
+		const topName = 'topml';
+		const topEmoji = '💵';
+		const chatObj = await db.collection('chats').findOne({
+			_id: chatId
+		});
+		const chatActive = (chatObj) ? chatObj.tops.hasOwnProperty(topName) : false;
+
+		if (chatActive) {
+			const stats = await generateTopStats(chatId, topName, topEmoji);
+			if (stats.statsSring) {
+				const topObj = {
+					name: chatObj.name,
+					tag: chatObj.tag,
+					stats: stats.statsSring,
+					summ: stats.statsSumm,
+					string: '💰 Топ горе инвесторов'
+				};
+				const report = await generateTopReport(topObj);
+				await bot.sendMessage(chatId, report, {
+					parse_mode: 'HTML'
+				});
+			} else {
+				await bot.sendMessage(chatId, text.empty);
+			}
+		} else {
+			await bot.sendMessage(chatId, text.topinactive);
+		}
+	});
+
+	bot.onText(/\/topzero/, async function (msg) {
+		const chatId = msg.chat.id;
+		const topName = 'topzero';
+		const topEmoji = '📄';
+		const chatObj = await db.collection('chats').findOne({
+			_id: chatId
+		});
+		const chatActive = (chatObj) ? chatObj.tops.hasOwnProperty(topName) : false;
+
+		if (chatActive) {
+			const stats = await generateTopStats(chatId, topName, topEmoji);
+			if (stats.statsSring) {
+				const topObj = {
+					name: chatObj.name,
+					tag: chatObj.tag,
+					stats: stats.statsSring,
+					summ: stats.statsSumm,
+					string: '0️⃣ Топ держателей нулей'
+				};
+				const report = await generateTopReport(topObj);
+				await bot.sendMessage(chatId, report, {
+					parse_mode: 'HTML'
+				});
+			} else {
+				await bot.sendMessage(chatId, text.empty);
+			}
+		} else {
+			await bot.sendMessage(chatId, text.topinactive);
+		}
+	});
+
+	bot.onText(/\/topuber/, async function (msg) {
+		const chatId = msg.chat.id;
+		const topName = 'topuber';
+		const topEmoji = '📄';
+		const chatObj = await db.collection('chats').findOne({
+			_id: chatId
+		});
+		const chatActive = (chatObj) ? chatObj.tops.hasOwnProperty(topName) : false;
+
+		if (chatActive) {
+			const stats = await generateTopStats(chatId, topName, topEmoji);
+			if (stats.statsSring) {
+				const topObj = {
+					name: chatObj.name,
+					tag: chatObj.tag,
+					stats: stats.statsSring,
+					summ: stats.statsSumm,
+					string: '🚕 Топ уберпопулярных'
+				};
+				const report = await generateTopReport(topObj);
+				await bot.sendMessage(chatId, report, {
+					parse_mode: 'HTML'
+				});
+			} else {
+				await bot.sendMessage(chatId, text.empty);
+			}
+		} else {
+			await bot.sendMessage(chatId, text.topinactive);
+		}
+	});
+
+};

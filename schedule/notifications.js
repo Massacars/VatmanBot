@@ -1,6 +1,8 @@
 module.exports = (schedule, bot, config, db) => {
 	const formatString = require('../util/formatString');
-	const { eatNotifString } = require('../strings/chats-strings');
+	const {
+		eatNotifString
+	} = require('../strings/chats-strings');
 
 	const eatFirstNotifRule = new schedule.RecurrenceRule();
 	eatFirstNotifRule.hour = [8, 11, 14, 17, 20];

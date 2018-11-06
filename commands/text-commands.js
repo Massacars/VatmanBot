@@ -345,24 +345,6 @@ module.exports = (bot, config, db) => {
 		}            
 	});
 
-	bot.onText(/^\/test$/, async function (msg) {
-		const chatId = msg.chat.id;
-		const formatString = require('../util/formatString');
-		const { eatNotifString } = require('../strings/chats-strings');
-		const chatObj = await db.collection('chats').findOne({ _id: chatId });
-
-		async function generateEatMessage(chatObj) {
-			let chatTag = "";
-			if (chatObj.tag) {
-				chatTag = chatObj.tag;
-			}
-			return formatString(
-				eatNotifString, chatObj.name, chatTag,
-			);
-		};
-		await bot.sendMessage(chatId, await generateEatMessage(chatObj), { parse_mode: 'HTML' });
-	});
-
 	bot.onText(/^\/helpmeplz/, async (msg) => {
 		const msgId = msg.message_id;
 		const userId = msg.from.id;
