@@ -28,7 +28,7 @@ module.exports = (bot, config, db) => {
 			},
 			division: chatId
 		}).sort({
-			points: 1
+			[`tops.${topName}.points`]: -1
 		}).toArray();
 
 		if (usersArr.length !== -1) {
