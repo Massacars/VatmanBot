@@ -9,7 +9,7 @@ module.exports = (bot, config, db) => {
 
 	const files = config.files;
 	const textsTriggers = config.triggers;
-	const texts = config.tops;
+	const texts = config.topmsg;
 
 	const getUserPoints = async (userObj, topName) => {
 		let userPoints = 0;
@@ -118,7 +118,7 @@ module.exports = (bot, config, db) => {
 				//end
 
 				//start sleep tops
-				if (sleep[0]) {
+				if (sleep && sleep[0]) {
 					const topName = 'topsleep';
 					await topConstructor(userObj, topName);
 					await bot.sendMessage(msg.chat.id, texts.sleep, {

@@ -278,7 +278,8 @@ module.exports = (bot, config, db) => {
 					type: msg.chat.type,
 					tag: '',
 					state: true,
-					tops: {}
+					tops: {},
+					games: {}
 				};
 				const result = await db.collection('chats').insertOne(chatData);
 				if (result.result.ok) {

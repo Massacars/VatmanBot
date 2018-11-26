@@ -1,68 +1,128 @@
-const mysql = require('mysql');
+const {
+	checkFwd,
+	checkTime,
+	getUserObjTemplate,
+	checkLastForward
+} = require('../util/tops-func');
 
-const connection = mysql.createConnection({
-	host     : config.db.host,
-	user     : config.db.user,
-	password : config.db.password,
-	database : config.db.database
-});
+module.exports = (bot, config, db, scheduler) => {
 
-connection.connect(function(err) {
-  if (err) {
-    console.error('error connecting: ' + err.stack);
-    return;
-  } 
-  console.log('connected as id ' + connection.threadId);
-});
+	const gameName = 'pizza';
 
-function userlist(array, lenght){
-	var stringUserList = '';
-	if(!lenght){
-		stringUserList = stringUserList + ('\nID: 1 ' + array[0].username + ' Name: ' + array[0].first_name);
-	} else {
-		for (i = 0; i < lenght; i++){
-			stringUserList = stringUserList + ('\nID:'+ i + ' - ' + array[i].username + ' Name: ' + array[i].first_name);
-			console.log(stringUserList);
-		}
-	}
-	return stringUserList;
-};	
+	const createPizza = async (chatId, gameName, hp) => {
+		const pizzaObj = {
+			date: Date.now(),
+			hp: hp,
+			inDamage: {},
+			state: 'active'
+		};
 
-bot.onText(/\/reg/, async function(msg, match) {
-	const userId = msg.from.id;
-	const chatId = msg.chat.id;
-
-	if (msg.chat.type == 'group' || msg.chat.type == 'supergroup') {
-
-		const userName = msg.from.first_name;
-		const userLastName = msg.from.last_name;
-		const username = msg.from.username;
-
-		connection.query('SELECT `state` FROM `users` WHERE `username` = "' + username + '" and `chat_id` = "' + chatId + '"', async function (error, results, fields) {
-			if(results[0]){		
-				if(results[0].state == 0){
-					await bot.sendMessage(chatId, config.phrases.gameover);
-				}else{
-					await bot.sendMessage(chatId, config.phrases.gameready);
-				}
-			} else {
-				connection.query("INSERT INTO `users` (`id`, `chat_id`,`username`, `first_name`, `last_name`, `state`) VALUES (NULL, '" + chatId + "', '" + username + "', '" + userName + "', '" + userLastName + "', '1');", async function (error, results, fields) {
-					if (error) throw error;
-					await bot.sendMessage(chatId, config.phrases.gamestart);
-				});							
+		const status = await db.collection('chats').updateOne({
+			_id: chatId
+		}, {
+			$set: {
+				[`games.${gameName}.enemylist.`]: pizzaObj
 			}
 		});
-	}
-});
 
-bot.onText(/\/list/, async function(msg, match) {
-	const userId = msg.from.id;
-	const chatId = msg.chat.id;
+		if (status.result.ok) {
+			return status.result.ok;
+		}
+	};
 
-	if (msg.chat.type == 'group' || msg.chat.type == 'supergroup') {
-		connection.query('SELECT * FROM `users` WHERE `chat_id` = "' + chatId + '"', async function (error, results, fields) {
-			console.log(results);			
-			await bot.sendMessage(chatId, userlist(results, Object.keys(results).length));
-		});				
-	}
-});
+	const updateHp = async (chatId, gameName, hp) => {
+		const status = await db.collection('chats').updateOne({
+			_id: chatId
+		}, {
+			$set: {
+				[`games.${gameName}.enemy.hp`]: hp
+			}
+		});
+		if (status.result.ok){
+			return status.result.ok;
+		}		
+	};
+
+	const regDamage = async (chatId, gameName, userId, damage) => {
+		const damageDealed = await db.collection('chats').findOne({
+			_id: chatId
+		}, {
+			[`games.${gameName}.enemy.inDamage.${userId}`]: 1
+		});
+
+		const updatedDamage = damageDealed + damage;
+
+		await db.collection('chats').updateOne({
+			_id: chatId
+		}, {
+			$set: {
+				[`games.${gameName}.enemy.inDamage.${userId}`]: updatedDamage
+			}
+		});
+	};
+
+	const dealDamage = async (chatId, userId, gameName, damage) => {
+		const hp = await db.collection('chats').findOne({
+			_id: chatId
+		}, {
+			[`games.${gameName}.enemy.hp`]: 1
+		});
+		const updatedHp = hp - damage;
+		await updateHp(chatId, gameName, updatedHp);
+		await regDamage(chatId, userId, damage, gameName);
+		return updatedHp;
+	};
+
+	const chatGameActivator = async (chatId, gameName) => {
+		const chatObj = await db.collection('chats').findOne({
+			_id: chatId
+		});
+		if (chatObj) {
+			chatObj.games[gameName] = {state: true};
+			await db.collection('chats').updateOne({
+				_id: chatId
+			}, {
+				$set: chatObj
+			});
+			await createPizza(chatId, gameName, 1000);
+			return ('updated');
+		} else {
+			return ('not found');
+		}
+	};
+
+	bot.onText(/\/go_pizza/, async (msg) => {
+		const chatId = msg.chat.id;
+		const active = await chatGameActivator(chatId, gameName);
+		if (active === 'updated') {
+			console.log('updated');
+		} else {
+			console.log('not found');
+		}
+	});
+
+	bot.onText(/Твои результаты в битве на \d{2} часов: @startupwarsreport/, async (msg) => {
+		if (await checkFwd(msg)) {
+			if (await checkTime(msg)) {
+				const userId = msg.from.id;
+				const chatId = msg.chat.id;
+				const msgText = msg.text;
+				const damage = +msgText.match(/🏆Твой вклад: (.*)/)[1];
+
+				if (damage > 0) {
+					const hp = await dealDamage(chatId, userId, gameName, damage);
+					console.log(hp);
+				}
+
+				if (damage == 0) {
+					const hp = await noDamage()
+				}
+
+				if (damage < 0) {
+					const hp = await heal(damage);
+				}
+
+			}
+		}
+	});
+};

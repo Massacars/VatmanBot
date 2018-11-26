@@ -7,7 +7,7 @@ module.exports = (bot, config, db) => {
 			_id: userId,
 			admin: true
 		});
-		if (checkUser._id == config.admin) {
+		if (checkUser && checkUser._id == config.admin) {
 			await db.collection('users').updateMany({
 				division: chatId
 			}, {
