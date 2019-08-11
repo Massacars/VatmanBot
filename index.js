@@ -2,19 +2,25 @@ process.env['NTBA_FIX_319'] = 1;
 
 const TelegramBot = require('node-telegram-bot-api');
 const config = require('config');
-const requireFu = require('require-fu'); 
+const requireFu = require('require-fu');
 const Scheduler = require('node-schedule');
 const MongoClient = require('mongodb').MongoClient;
 const bot = new TelegramBot(config.token, { polling: true });
 
 // Connection URL
-const url = 'mongodb://' + config.db.user + ':' + config.db.password + '@' + config.db.host + ':' + config.db.port + '/' + config.db.database; 
- 
+const url = `mongodb+srv://${config.db.user}:${
+	config.db.password
+}@vatmanbot-a1hux.mongodb.net/test?retryWrites=true&w=majority`;
+
 // Database Name
 const dbName = config.db.database;
 
 // Use connect method to connect to the server
 MongoClient.connect(url, async function(err, client) {
+	if (err) {
+		console.log(err);
+		return;
+	}
 
 	console.log('Connected successfully to server');
 
@@ -31,5 +37,5 @@ MongoClient.connect(url, async function(err, client) {
 	process.on('SIGINT', async () => {
 		await client.close(false);
 		process.exit();
-	});	
+	});
 });

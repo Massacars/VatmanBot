@@ -1,9 +1,6 @@
-const {
-	getUserObjTemplate
-} = require('../util/tops-func');
+const { getUserObjTemplate } = require('../util/tops-func');
 
 module.exports = (bot, config, db) => {
-
 	const coinFlip = async () => {
 		const VatmanSay = config.vatmansay;
 		const vatmanSayArr = Object.keys(VatmanSay);
@@ -11,7 +8,7 @@ module.exports = (bot, config, db) => {
 	};
 
 	const coinHandFlip = async () => {
-		return (Math.floor(Math.random() * 2) === 0);
+		return Math.floor(Math.random() * 2) === 0;
 	};
 
 	const messageList = async (array, lenght) => {
@@ -22,23 +19,63 @@ module.exports = (bot, config, db) => {
 		return phrasesList;
 	};
 
-	bot.onText(/^\/start$/, async function (msg) {
+	bot.onText(/^\/start$/, async function(msg) {
 		const userId = msg.from.id;
 		await bot.sendMessage(userId, config.phrases.hello);
 	});
 
-	bot.onText(/^\/info/, async function (msg) {
+	bot.onText(/^\/info/, async function(msg) {
 		const userId = msg.from.id;
 		const chatId = msg.chat.id;
 
+		const text = `
+		Info
+		/ping - понг
+		/say - рандомная фразочка
+		/coin - бросить монетку
+		/money - пин на лотерею
+		/eat - пин на репорты и еду
+		/helpmeplz - информация по прокачке
+		#теги - список хештегов
+		
+		Admin
+		/phrases
+		
+		Users
+		/add_user
+		/add_admin
+		
+		Chats
+		/add_chat
+		/disable_chat
+		/remove_chat
+		
+		Tops
+		/tops
+		
+		/add_topml
+		/add_topzero
+		/add_topuber
+		/add_topsleep
+		
+		/topml
+		/topzero
+		/topuber
+		/topsleep
+		
+		/reset %top name%
+		/hard_reset
+		/hard_drop		
+		`;
+
 		if (msg.chat.type == 'group' || msg.chat.type == 'supergroup') {
-			await bot.sendMessage(chatId, config.phrases.help);
+			await bot.sendMessage(chatId, config.phrases.noway);
 		} else {
-			await bot.sendMessage(userId, config.phrases.help);
+			await bot.sendMessage(userId, text);
 		}
 	});
 
-	bot.onText(/\/ping/, async function (msg) {
+	bot.onText(/\/ping/, async function(msg) {
 		const msgId = msg.message_id;
 		const userId = msg.from.id;
 		const chatId = msg.chat.id;
@@ -54,7 +91,7 @@ module.exports = (bot, config, db) => {
 		}
 	});
 
-	bot.onText(/\/say/, async function (msg) {
+	bot.onText(/\/say/, async function(msg) {
 		const msgId = msg.message_id;
 		const userId = msg.from.id;
 		const chatId = msg.chat.id;
@@ -80,20 +117,24 @@ module.exports = (bot, config, db) => {
 		}
 	});
 
-	bot.onText(/^\/phrases$/, async function (msg) {
+	bot.onText(/^\/phrases$/, async function(msg) {
 		const userId = msg.from.id;
 		const chatId = msg.chat.id;
 		const phrases = config.vatmansay;
 		const phrasesArr = Object.values(phrases);
 
 		if (msg.chat.type == 'private') {
-			await bot.sendMessage(userId, await messageList(phrasesArr, phrasesArr.length));
-		} {
+			await bot.sendMessage(
+				userId,
+				await messageList(phrasesArr, phrasesArr.length)
+			);
+		}
+		{
 			await bot.sendMessage(chatId, config.phrases.noway);
 		}
 	});
 
-	bot.onText(/\/coin/, async function (msg) {
+	bot.onText(/\/coin/, async function(msg) {
 		const userId = msg.from.id;
 		const chatId = msg.chat.id;
 		const random = await coinHandFlip();
@@ -113,7 +154,7 @@ module.exports = (bot, config, db) => {
 		}
 	});
 
-	bot.onText(/^\/money/, async function (msg) {
+	bot.onText(/^\/money/, async function(msg) {
 		const chatId = msg.chat.id;
 		const messageId = msg.message_id;
 		const userId = msg.from.id;
@@ -123,9 +164,13 @@ module.exports = (bot, config, db) => {
 
 		if (msg.chat.type == 'group' || msg.chat.type == 'supergroup') {
 			if (userObj && userObj.admin == true) {
-				const moneyMessage = await bot.sendMessage(chatId, config.pinmsg.money, {
-					parse_mode: 'HTML'
-				});
+				const moneyMessage = await bot.sendMessage(
+					chatId,
+					config.pinmsg.money,
+					{
+						parse_mode: 'HTML'
+					}
+				);
 				await bot.pinChatMessage(chatId, moneyMessage.message_id);
 				await bot.deleteMessage(chatId, messageId);
 			} else {
@@ -136,7 +181,7 @@ module.exports = (bot, config, db) => {
 		}
 	});
 
-	bot.onText(/^\/eat/, async function (msg) {
+	bot.onText(/^\/eat/, async function(msg) {
 		const chatId = msg.chat.id;
 		const messageId = msg.message_id;
 		const userId = msg.from.id;
@@ -159,19 +204,7 @@ module.exports = (bot, config, db) => {
 		}
 	});
 
-	bot.onText(/^\/list$/, async function (msg) {
-		const userId = msg.from.id;
-		const userObj = await db.collection('users').findOne({
-			_id: userId
-		});
-		if (msg.chat.type == 'private') {
-			if (userObj && userObj.admin == true) {
-				await bot.sendMessage(userId, config.pinmsg.list);
-			}
-		}
-	});
-
-	bot.onText(/^\/add_user$/, async function (msg) {
+	bot.onText(/^\/add_user$/, async function(msg) {
 		const userId = msg.from.id;
 		const chatId = msg.chat.id;
 		const replyUser = msg.reply_to_message.from;
@@ -180,21 +213,34 @@ module.exports = (bot, config, db) => {
 		});
 
 		if (userObj) {
-			if (userObj.admin && (msg.chat.type == 'group' || msg.chat.type == 'supergroup')) {
+			if (
+				userObj.admin &&
+				(msg.chat.type == 'group' || msg.chat.type == 'supergroup')
+			) {
 				const replyUserObj = await db.collection('users').findOne({
 					_id: replyUser.id
 				});
 				if (replyUserObj) {
-					await bot.sendMessage(chatId, `Пользователь <b>${replyUserObj.username}</b> уже зарегистрирован!`, {
-						parse_mode: 'HTML'
-					});
+					await bot.sendMessage(
+						chatId,
+						`Пользователь <b>${replyUserObj.username}</b> уже зарегистрирован!`,
+						{
+							parse_mode: 'HTML'
+						}
+					);
 				} else {
 					const userObjTemplate = await getUserObjTemplate(msg);
-					const result = await db.collection('users').insertOne(userObjTemplate);
+					const result = await db
+						.collection('users')
+						.insertOne(userObjTemplate);
 					if (result.result.ok) {
-						await bot.sendMessage(chatId, `Пользователь <b>${userObjTemplate.username}</b> добавлен!`, {
-							parse_mode: 'HTML'
-						});
+						await bot.sendMessage(
+							chatId,
+							`Пользователь <b>${userObjTemplate.username}</b> добавлен!`,
+							{
+								parse_mode: 'HTML'
+							}
+						);
 					} else {
 						await bot.sendMessage(chatId, config.phrases.error);
 					}
@@ -207,31 +253,45 @@ module.exports = (bot, config, db) => {
 		}
 	});
 
-	bot.onText(/^\/add_admin/, async function (msg) {
+	bot.onText(/^\/add_admin/, async function(msg) {
 		const userId = msg.from.id;
 		const chatId = msg.chat.id;
 		const chatAdmin = msg.reply_to_message.from;
 
-		if (config.admin == userId && (msg.chat.type == 'group' || msg.chat.type == 'supergroup')) {
+		if (
+			config.admin == userId &&
+			(msg.chat.type == 'group' || msg.chat.type == 'supergroup')
+		) {
 			const chatAdminObj = await db.collection('users').findOne({
 				_id: chatAdmin.id
 			});
 			if (chatAdminObj && chatAdminObj.admin == true) {
-				await bot.sendMessage(chatId, `Пользователь <b>${msg.chat.username}</b> уже администратор!`, {
-					parse_mode: 'HTML'
-				});
-			} else if (chatAdminObj && chatAdminObj.admin != true) {
-				const result = await db.collection('users').updateOne({
-					_id: chatAdmin.id
-				}, {
-					$set: {
-						admin: true
-					},
-				});
-				if (result.result.ok) {
-					await bot.sendMessage(chatId, `Пользователь <b>${chatAdminObj.username}</b> назначен админом!`, {
+				await bot.sendMessage(
+					chatId,
+					`Пользователь <b>${msg.chat.username}</b> уже администратор!`,
+					{
 						parse_mode: 'HTML'
-					});
+					}
+				);
+			} else if (chatAdminObj && chatAdminObj.admin != true) {
+				const result = await db.collection('users').updateOne(
+					{
+						_id: chatAdmin.id
+					},
+					{
+						$set: {
+							admin: true
+						}
+					}
+				);
+				if (result.result.ok) {
+					await bot.sendMessage(
+						chatId,
+						`Пользователь <b>${chatAdminObj.username}</b> назначен админом!`,
+						{
+							parse_mode: 'HTML'
+						}
+					);
 				} else {
 					await bot.sendMessage(chatId, config.phrases.error);
 				}
@@ -239,9 +299,15 @@ module.exports = (bot, config, db) => {
 				const userObjTemplate = await getUserObjTemplate(msg);
 				const result = await db.collection('users').insertOne(userObjTemplate);
 				if (result.result.ok) {
-					await bot.sendMessage(chatId, `Пользователь <b>${userObjTemplate.username}</b> добавлен и назначен админом!`, {
-						parse_mode: 'HTML'
-					});
+					await bot.sendMessage(
+						chatId,
+						`Пользователь <b>${
+							userObjTemplate.username
+						}</b> добавлен и назначен админом!`,
+						{
+							parse_mode: 'HTML'
+						}
+					);
 				} else {
 					await bot.sendMessage(chatId, config.phrases.error);
 				}
@@ -251,7 +317,7 @@ module.exports = (bot, config, db) => {
 		}
 	});
 
-	bot.onText(/^\/add_chat/, async function (msg) {
+	bot.onText(/^\/add_chat/, async function(msg) {
 		const userId = msg.from.id;
 		const chatId = msg.chat.id;
 		const userObj = await db.collection('users').findOne({
@@ -263,14 +329,21 @@ module.exports = (bot, config, db) => {
 		} else {
 			admin = false;
 		}
-		if (msg.chat.type == 'group' || msg.chat.type == 'supergroup' && admin == true) {
+		if (
+			msg.chat.type == 'group' ||
+			(msg.chat.type == 'supergroup' && admin == true)
+		) {
 			const chatState = await db.collection('chats').findOne({
 				_id: chatId
 			});
 			if (chatState) {
-				await bot.sendMessage(chatId, `Чат <b>${msg.chat.title}</b> уже подписан на уведомления`, {
-					parse_mode: 'HTML'
-				});
+				await bot.sendMessage(
+					chatId,
+					`Чат <b>${msg.chat.title}</b> уже подписан на уведомления`,
+					{
+						parse_mode: 'HTML'
+					}
+				);
 			} else {
 				const chatData = {
 					_id: chatId,
@@ -283,17 +356,24 @@ module.exports = (bot, config, db) => {
 				};
 				const result = await db.collection('chats').insertOne(chatData);
 				if (result.result.ok) {
-					await bot.sendMessage(chatId, `Чат <b>${msg.chat.title}</b> добавлен в рассылку уведомлений!`, {
-						parse_mode: 'HTML'
-					});
-					await db.collection('users').updateMany({
-						_id: userId
-					}, {
-						$set: {
-							'state.sendMsg': true,
-							'state.sendMsgChat': chatId,
+					await bot.sendMessage(
+						chatId,
+						`Чат <b>${msg.chat.title}</b> добавлен в рассылку уведомлений!`,
+						{
+							parse_mode: 'HTML'
+						}
+					);
+					await db.collection('users').updateMany(
+						{
+							_id: userId
 						},
-					});
+						{
+							$set: {
+								'state.sendMsg': true,
+								'state.sendMsgChat': chatId
+							}
+						}
+					);
 					await bot.sendMessage(chatId, 'Введите тег чата:');
 				} else {
 					await bot.sendMessage(chatId, config.phrases.error);
@@ -306,7 +386,7 @@ module.exports = (bot, config, db) => {
 		}
 	});
 
-	bot.on('message', async function (msg) {
+	bot.on('message', async function(msg) {
 		const userId = msg.from.id;
 		const chatId = msg.chat.id;
 		const userObj = await db.collection('users').findOne({
@@ -314,34 +394,47 @@ module.exports = (bot, config, db) => {
 		});
 
 		if (userObj) {
-			if (userObj.state.sendMsg == true && chatId == userObj.state.sendMsgChat) {
-				const result = await db.collection('chats').updateOne({
-					_id: chatId
-				}, {
-					$set: {
-						tag: msg.text
+			if (
+				userObj.state.sendMsg == true &&
+				chatId == userObj.state.sendMsgChat
+			) {
+				const result = await db.collection('chats').updateOne(
+					{
+						_id: chatId
 					},
-				});
+					{
+						$set: {
+							tag: msg.text
+						}
+					}
+				);
 				if (result.result.ok) {
-					await bot.sendMessage(chatId, `Тег для чата <b>${msg.chat.title}</b> установлен!`, {
-						parse_mode: 'HTML'
-					});
+					await bot.sendMessage(
+						chatId,
+						`Тег для чата <b>${msg.chat.title}</b> установлен!`,
+						{
+							parse_mode: 'HTML'
+						}
+					);
 				} else {
 					await bot.sendMessage(chatId, config.phrases.error);
 				}
-				await db.collection('users').updateOne({
-					_id: userId
-				}, {
-					$set: {
-						'state.sendMsg': false,
-						'state.sendMsgChat': '',
+				await db.collection('users').updateOne(
+					{
+						_id: userId
 					},
-				});
+					{
+						$set: {
+							'state.sendMsg': false,
+							'state.sendMsgChat': ''
+						}
+					}
+				);
 			}
 		}
 	});
 
-	bot.onText(/^\/disable_chat/, async function (msg) {
+	bot.onText(/^\/disable_chat/, async function(msg) {
 		const userId = msg.from.id;
 		const chatId = msg.chat.id;
 		const userObj = await db.collection('users').findOne({
@@ -355,11 +448,14 @@ module.exports = (bot, config, db) => {
 				});
 				if (chatObj) {
 					chatObj.state = false;
-					await db.collection('chats').updateOne({
-						_id: chatId
-					}, {
-						$set: chatObj
-					});
+					await db.collection('chats').updateOne(
+						{
+							_id: chatId
+						},
+						{
+							$set: chatObj
+						}
+					);
 					await bot.sendMessage(chatId, 'Чат деактивований');
 				} else {
 					await bot.sendMessage(chatId, 'Чат не підписаний');
@@ -372,7 +468,7 @@ module.exports = (bot, config, db) => {
 		}
 	});
 
-	bot.onText(/^\/remove_chat/, async function (msg) {
+	bot.onText(/^\/remove_chat/, async function(msg) {
 		const userId = msg.from.id;
 		const chatId = msg.chat.id;
 		const userObj = await db.collection('users').findOne({
@@ -400,7 +496,7 @@ module.exports = (bot, config, db) => {
 		}
 	});
 
-	bot.onText(/^\/helpmeplz/, async (msg) => {
+	bot.onText(/^\/helpmeplz/, async msg => {
 		const msgId = msg.message_id;
 		const userId = msg.from.id;
 		const chatId = msg.chat.id;
@@ -412,14 +508,17 @@ module.exports = (bot, config, db) => {
 		});
 
 		if (userObj) {
-			db.collection('users').updateOne({
-				_id: userId
-			}, {
-				$set: {
-					'state.sendLvl': true,
-					'state.sendMsgChat': chatId
+			db.collection('users').updateOne(
+				{
+					_id: userId
+				},
+				{
+					$set: {
+						'state.sendLvl': true,
+						'state.sendMsgChat': chatId
+					}
 				}
-			});
+			);
 		} else {
 			let userOptions = {
 				_id: userId,
@@ -517,26 +616,36 @@ module.exports = (bot, config, db) => {
 				});
 			}
 			if (text > 42) {
-				await bot.sendMessage(chatId, '\n\nКак же достали эти старые #переточи...', {
-					parse_mode: 'Markdown',
-					reply_to_message_id: msgId
-				});
+				await bot.sendMessage(
+					chatId,
+					'\n\nКак же достали эти старые #переточи...',
+					{
+						parse_mode: 'Markdown',
+						reply_to_message_id: msgId
+					}
+				);
 			}
-			db.collection('users').updateOne({
-				_id: userId
-			}, {
-				$set: {
-					'state.sendLvl': false,
-					'state.sendMsgChat': ''
+			db.collection('users').updateOne(
+				{
+					_id: userId
+				},
+				{
+					$set: {
+						'state.sendLvl': false,
+						'state.sendMsgChat': ''
+					}
 				}
-			});
+			);
 		}
 	});
 
-	bot.onText(/\/tops/, async function (msg) {
+	bot.onText(/\/tops/, async function(msg) {
 		const chatId = msg.chat.id;
 		if (msg.chat.type == 'qroup' || msg.chat.type == 'supergroup') {
-			bot.sendMessage(chatId, 'Список топов:\n💰 Топ горе инвесторов - /topml (вкл. - /add_topml)\n0️⃣ Топ держателей нулей - /topzero (вкл. - /add_topzero)\n🚕 Топ уберпопулярных - /topuber (вкл. - /add_topuber)\n😴  Топ спящих - /topsleep (вкл. - /add_topsleep)');
+			bot.sendMessage(
+				chatId,
+				'Список топов:\n💰 Топ горе инвесторов - /topml (вкл. - /add_topml)\n0️⃣ Топ держателей нулей - /topzero (вкл. - /add_topzero)\n🚕 Топ уберпопулярных - /topuber (вкл. - /add_topuber)\n😴  Топ спящих - /topsleep (вкл. - /add_topsleep)'
+			);
 		}
 	});
 };

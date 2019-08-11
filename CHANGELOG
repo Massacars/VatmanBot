@@ -1,3 +1,9 @@
+0.37.0
+
+    Change local mongo db to cloud
+    Change some code formatting
+    Remove /list command
+
 0.36.0
 
     Triggers, reports and activators refactoring
