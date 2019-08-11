@@ -256,6 +256,12 @@ module.exports = (bot, config, db) => {
 	bot.onText(/^\/add_admin/, async function(msg) {
 		const userId = msg.from.id;
 		const chatId = msg.chat.id;
+
+		if (!msg.reply_to_message) {
+			await bot.sendMessage(chatId, 'Реплайни на сообщение пользователя!');
+			return;
+		}
+
 		const chatAdmin = msg.reply_to_message.from;
 
 		if (
@@ -618,7 +624,7 @@ module.exports = (bot, config, db) => {
 			if (text > 42) {
 				await bot.sendMessage(
 					chatId,
-					'\n\nКак же достали эти старые #переточи...',
+					'\n\nТы на столко старый, что для тебя есть только два выхода: обнулится или /bund',
 					{
 						parse_mode: 'Markdown',
 						reply_to_message_id: msgId

@@ -3,15 +3,18 @@ const BOT_USERNAME = 'StartupWarsBot';
 const FORWARD_TIME = 43200;
 
 const checkFwd = async msg => {
-	return (msg.forward_from.username === BOT_JR_USERNAME || msg.forward_from.username === BOT_USERNAME) ? true : false;
+	return msg.forward_from.username === BOT_JR_USERNAME ||
+		msg.forward_from.username === BOT_USERNAME
+		? true
+		: false;
 };
 
 const checkTime = async msg => {
 	const currentTime = Math.floor(Date.now() / 1000);
-	return (currentTime - msg.forward_date < FORWARD_TIME) ? true : false;
+	return currentTime - msg.forward_date < FORWARD_TIME ? true : false;
 };
 
-const getUserObjTemplate = async (msg) => {
+const getUserObjTemplate = async msg => {
 	const userObjTemplate = {
 		_id: msg.from.id,
 		name: msg.from.first_name,
@@ -33,7 +36,9 @@ const getUserObjTemplate = async (msg) => {
 };
 
 const checkLastForward = async (userObj, msg) => {
-	return (userObj.tops.lastforward == msg.forward_date) ? true : false;
+	if ('lastforward' in userObj) {
+		return userObj.tops.lastforward == msg.forward_date ? true : false;
+	}
 };
 
 module.exports = {
