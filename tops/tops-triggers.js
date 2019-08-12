@@ -54,7 +54,6 @@ module.exports = (bot, config, db) => {
 				if (await checkTime(msg)) {
 					const userId = msg.from.id;
 					const chatId = msg.chat.id;
-					const msgId = msg.message_id;
 					const msgText = msg.text;
 
 					const money = msgText.match(/💵Деньги: (.*)/);
@@ -77,9 +76,7 @@ module.exports = (bot, config, db) => {
 
 					// check last forward
 					if (await checkLastForward(userObj, msg)) {
-						await bot.sendMessage(chatId, texts.reportready, {
-							reply_to_message_id: msgId
-						});
+						await bot.sendMessage(chatId, texts.reportready);
 						return;
 					}
 
@@ -88,8 +85,7 @@ module.exports = (bot, config, db) => {
 						let topName = 'topzero';
 						await topConstructor(userObj, topName);
 						await bot.sendDocument(chatId, files.noMoney, {
-							caption: textsTriggers.noMoney,
-							reply_to_message_id: msgId
+							caption: textsTriggers.noMoney
 						});
 					}
 					// end
@@ -99,13 +95,13 @@ module.exports = (bot, config, db) => {
 						let topName = 'topuber';
 						await topConstructor(userObj, topName);
 						if (userId == config.vatman) {
-							await bot.sendMessage(chatId, config.phrases.vatmanlooser, {
-								reply_to_message_id: msgId
-							});
+							await bot.sendMessage(
+								chatId,
+								`${userObj.username}\n ${config.phrases.vatmanlooser}`
+							);
 						} else {
 							await bot.sendDocument(chatId, files.uber, {
-								caption: textsTriggers.uber,
-								reply_to_message_id: msgId
+								caption: `${userObj.username}\n${textsTriggers.uber}`
 							});
 						}
 					}
@@ -118,9 +114,7 @@ module.exports = (bot, config, db) => {
 						const clearMatch = match[1];
 						const points = +clearMatch;
 						await topConstructor(userObj, topName, points);
-						await bot.sendMessage(msg.chat.id, texts.report, {
-							reply_to_message_id: msg.message_id
-						});
+						await bot.sendMessage(msg.chat.id, `${texts.report}`);
 					}
 					//end
 
@@ -128,9 +122,7 @@ module.exports = (bot, config, db) => {
 					if (sleep && sleep[0]) {
 						const topName = 'topsleep';
 						await topConstructor(userObj, topName);
-						await bot.sendMessage(msg.chat.id, texts.sleep, {
-							reply_to_message_id: msg.message_id
-						});
+						await bot.sendMessage(msg.chat.id, `${texts.sleep}`);
 					}
 
 					//upd last forward date

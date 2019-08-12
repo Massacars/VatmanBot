@@ -1,6 +1,5 @@
 module.exports = (bot, config) => {
-
-	bot.onText(/^👫Мы завершили командное задание/, async function (msg) {
+	bot.onText(/^👫Мы завершили командное задание/, async function(msg) {
 		const msgId = msg.message_id;
 		const chatId = msg.chat.id;
 		const leaderId = config.team.SM.leader;
@@ -18,7 +17,7 @@ module.exports = (bot, config) => {
 		}
 	});
 
-	bot.onText(/^Ты выбрал командное задание:/, async function (msg) {
+	bot.onText(/^Ты выбрал командное задание:/, async function(msg) {
 		const msgId = msg.message_id;
 		const chatId = msg.chat.id;
 		const leaderId = config.team.SM.leader;
@@ -34,5 +33,13 @@ module.exports = (bot, config) => {
 				parse_mode: 'HTML'
 			});
 		}
+	});
+
+	bot.onText(/Хвацький Хлоп/, async msg => {
+		const chatId = msg.chat.id;
+		await bot.sendMessage(
+			chatId,
+			'РічЕрд не чіпай хлопа! Ба зараз з чату кікну гадину таку! 👿'
+		);
 	});
 };

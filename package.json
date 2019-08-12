@@ -1,32 +1,32 @@
 {
-  "name": "vatman.bot",
-  "version": "1.0.0",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "",
-  "license": "ISC",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Massacars/Vatman.bot.git"
-  },
-  "bugs": {
-    "url": "https://github.com/Massacars/Vatman.bot/issues"
-  },
-  "homepage": "https://github.com/Massacars/Vatman.bot#readme",
-  "dependencies": {
-    "config": "^1.30.0",
-    "mongodb": "^3.0.10",
-    "mysql": "^2.15.0",
-    "node-schedule": "^1.3.0",
-    "node-telegram-bot-api": "^0.30.0",
-    "require-fu": "^1.0.0",
-    "tgfancy": "^0.13.0"
-  },
-  "devDependencies": {
-    "eslint": "^5.8.0",
-    "eslint-config-google": "^0.9.1"
-  },
-  "description": ""
+	"name": "vatman.bot",
+	"version": "1.0.0",
+	"main": "index.js",
+	"scripts": {
+		"test": "nodemon index.js"
+	},
+	"author": "",
+	"license": "ISC",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/Massacars/Vatman.bot.git"
+	},
+	"bugs": {
+		"url": "https://github.com/Massacars/Vatman.bot/issues"
+	},
+	"homepage": "https://github.com/Massacars/Vatman.bot#readme",
+	"dependencies": {
+		"config": "^1.30.0",
+		"mongodb": "^3.0.10",
+		"mysql": "^2.15.0",
+		"node-schedule": "^1.3.0",
+		"node-telegram-bot-api": "^0.30.0",
+		"require-fu": "^1.0.0",
+		"tgfancy": "^0.13.0"
+	},
+	"devDependencies": {
+		"eslint": "^5.8.0",
+		"eslint-config-google": "^0.9.1"
+	},
+	"description": ""
 }
