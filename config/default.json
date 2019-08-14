@@ -122,5 +122,11 @@
 	},
 	"settings": {
 		"uber": 200
+	},
+	"teamSettings": {
+		"notification": {
+			"hour": "18",
+			"minute": "00"
+		}
 	}
 }
