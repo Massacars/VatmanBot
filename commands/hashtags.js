@@ -43,6 +43,28 @@ module.exports = (bot, config) => {
 		await bot.sendMessage(chatId, config.phrases.ty);
 	});
 
+	bot.onText(/#ватбаг/, async function(msg) {
+		const chatId = msg.chat.id;
+		const userName = msg.from.first_name;
+		const userLastName = msg.from.last_name;
+		const username = msg.from.username;
+		const chatTitle = msg.chat.title;
+		const text = msg.text;
+		await bot.sendMessage(
+			config.admin,
+			userName +
+				' ' +
+				userLastName +
+				' / ' +
+				username +
+				'\nЧат: ' +
+				chatTitle +
+				'\nБааааг блядь, баааг сцуко:' +
+				text
+		);
+		await bot.sendMessage(chatId, config.phrases.ty);
+	});
+
 	bot.onText(/#длякоманды/, async function(msg) {
 		const chatId = msg.chat.id;
 		const userName = msg.from.first_name;
