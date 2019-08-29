@@ -132,7 +132,7 @@
 	"chatSettings": {
 		"notification": {
 			"eatFirst": {
-				"hour": [10, 12, 15, 18, 21],
+				"hour": [10, 12, 17, 18, 21],
 				"minute": "50"
 			},
 			"eatLast": {
@@ -147,6 +147,10 @@
 				"hour": "22",
 				"minute": "10"
 			}
+		},
+		"stocksInfo":{
+			"stocksPP": 30,
+			"stocksOther": 3300
 		}
 	}	
 }

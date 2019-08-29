@@ -134,10 +134,11 @@ module.exports = (schedule, bot, config, db) => {
 	}
 
 	async function generateEatMessage(chatObj) {
+		const stocks = config.chatSettings.stocksInfo;
 		let chatTag = '';
 		if (chatObj.tag) {
 			chatTag = chatObj.tag;
 		}
-		return formatString(eatNotifString, chatObj.name, chatTag);
+		return formatString(eatNotifString, chatObj.name, chatTag, stocks.stocksPP, stocks.stocksOther);
 	}
 };
