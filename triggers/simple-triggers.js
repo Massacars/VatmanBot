@@ -36,15 +36,4 @@ module.exports = (bot, config) => {
 			});
 		}
 	});
-
-	bot.onText(/Хвацький Хлоп/, async msg => {
-		const chatId = msg.chat.id;
-
-		if (checkFwd(msg)) {
-			await bot.sendMessage(
-				chatId,
-				'РічЕрд не чіпай хлопа! Ба зараз з чату кікну гадину таку! 👿'
-			);
-		}
-	});
 };
