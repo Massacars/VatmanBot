@@ -6,9 +6,7 @@ const MongoClient = require('mongodb').MongoClient;
 const bot = new TelegramBot(config.token, { polling: true });
 
 // Connection URL
-const url = `mongodb+srv://${config.db.user}:${
-	config.db.password
-}@vatmanbot-a1hux.mongodb.net/test?retryWrites=true&w=majority`;
+const url = `mongodb+srv://${config.db.user}:${config.db.password}@vatmanbot-a1hux.mongodb.net/test?retryWrites=true&w=majority`;
 
 // Database Name
 const dbName = config.db.database;
